@@ -1,0 +1,16 @@
+{
+  "short_name": "ReserveFlow Pro",
+  "name": "ReserveFlow Pro Scheduling SaaS",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#8b5cf6",
+  "background_color": "#020617"
+}

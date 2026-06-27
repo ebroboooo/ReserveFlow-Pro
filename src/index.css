@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    @apply bg-slate-950 text-slate-100 antialiased selection:bg-brand-500 selection:text-white min-h-screen overflow-x-hidden;
+  }
+  
+  [dir="rtl"] body {
+    font-family: 'Cairo', 'Inter', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] h5, [dir="rtl"] h6 {
+    font-family: 'Cairo', 'Outfit', sans-serif;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-slate-950;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-800 rounded-full hover:bg-brand-500/50 transition-colors;
+}
+
+/* Glassmorphism classes */
+.glass-panel {
+  @apply bg-slate-900/60 backdrop-blur-xl border border-slate-800/80;
+}
+
+.glass-card {
+  @apply bg-slate-900/40 backdrop-blur-md border border-slate-800/50 shadow-xl transition-all duration-300;
+}
+
+.glass-card-hover {
+  @apply hover:border-brand-500/30 hover:bg-slate-900/50 hover:shadow-brand-500/5 hover:-translate-y-0.5;
+}
+
+.glass-input {
+  @apply bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 placeholder-slate-500 transition-all duration-200;
+}
+
+.glass-btn-primary {
+  @apply bg-gradient-to-r from-brand-600 to-violet-600 hover:from-brand-500 hover:to-violet-500 text-white font-medium px-4 py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-brand-500/20 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+}
+
+.glass-btn-secondary {
+  @apply bg-slate-900/80 border border-slate-800 hover:bg-slate-800/80 hover:border-slate-700 text-slate-300 font-medium px-4 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+}
+
+/* Gantt/Timeline components styles */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+/* Hide default arrows on number input */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
