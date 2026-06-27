@@ -165,9 +165,12 @@ export interface AuditLog {
   details: string;
 }
 
+export const DEFAULT_PUBLIC_BOOKING_SLUG = 'apex-preset';
+
 export interface SystemSettings {
   orgId: string;
   businessName: string;
+  publicSlug?: string;
   logoUrl?: string;
   address: string;
   phone: string;

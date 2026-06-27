@@ -10,6 +10,7 @@ import type {
   SystemSettings,
   Branch
 } from '../types';
+import { DEFAULT_PUBLIC_BOOKING_SLUG } from '../types';
 import type { 
   ICustomerRepository,
   IReservationRepository,
@@ -155,6 +156,7 @@ export const getPresetSeeds = (preset: string, orgId: string = DEFAULT_ORG_ID) =
   const settings: SystemSettings = {
     orgId,
     businessName: `Apex ${preset} Pro`,
+    publicSlug: DEFAULT_PUBLIC_BOOKING_SLUG,
     address: "777 Grand Boulevard, Suite 500",
     phone: "+1 (555) 880-9900",
     email: `support@apex-${preset.toLowerCase()}.com`,
@@ -194,6 +196,7 @@ export const getEmptySeeds = (orgId: string = DEFAULT_ORG_ID) => {
   const settings: SystemSettings = {
     orgId,
     businessName: "My Business",
+    publicSlug: DEFAULT_PUBLIC_BOOKING_SLUG,
     address: "",
     phone: "",
     email: "",
@@ -246,6 +249,7 @@ class LocalMockDatabase {
     if (saved) {
       try {
         this.data = JSON.parse(saved);
+        this.ensureDemoBusinessSlug();
         return;
       } catch (e) {
         console.error("Failed to load local DB state", e);
@@ -253,6 +257,22 @@ class LocalMockDatabase {
     }
     // Default to Salon preset
     this.resetPreset("Salon");
+  }
+
+  private ensureDemoBusinessSlug() {
+    if (!this.data?.settings) return;
+    if (!this.data.settings.publicSlug) {
+      this.data.settings.publicSlug = DEFAULT_PUBLIC_BOOKING_SLUG;
+      this.save();
+    }
+  }
+
+  public getPublicBookingSlug(): string {
+    return this.data?.settings?.publicSlug || DEFAULT_PUBLIC_BOOKING_SLUG;
+  }
+
+  public isValidPublicBookingSlug(slug: string): boolean {
+    return slug === this.getPublicBookingSlug();
   }
 
   public save() {

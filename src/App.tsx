@@ -167,7 +167,8 @@ export const App: React.FC = () => {
             {/* Public Booking Portal Checkout */}
             <Route path="/book/:slug" element={<BookingPortal />} />
 
-            {/* Default Landing to Dashboard/Login */}
+            {/* Default Landing */}
+            <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
           </Routes>
         </AppProvider>

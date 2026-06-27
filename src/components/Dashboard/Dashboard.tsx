@@ -300,7 +300,7 @@ export const Dashboard: React.FC = () => {
               <span className="text-xs font-bold text-white">Waitlist Queue</span>
               <span className="text-[10px] text-slate-500">Review pending clients</span>
             </button>
-            <button onClick={() => navigate('/book/demo')} className="p-4 rounded-xl border border-brand-500/30 bg-brand-500/10 hover:bg-brand-500/20 transition-all text-left group flex flex-col gap-2">
+            <button onClick={() => navigate('/book/apex-preset')} className="p-4 rounded-xl border border-brand-500/30 bg-brand-500/10 hover:bg-brand-500/20 transition-all text-left group flex flex-col gap-2">
               <PlusCircle className="h-5 w-5 text-brand-300 group-hover:scale-110 transition-transform" />
               <span className="text-xs font-bold text-brand-100">Public Portal</span>
               <span className="text-[10px] text-brand-300/70">View booking page</span>

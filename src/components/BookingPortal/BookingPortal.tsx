@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { db } from '../../db';
+import { mockDbInstance } from '../../db/mockRepository';
+import { BusinessNotFound } from './BusinessNotFound';
 import { StripeAdapter, PayPalAdapter } from '../../utils/adapters';
 import { 
   Building, 
@@ -15,7 +18,8 @@ import {
 } from 'lucide-react';
 
 export const BookingPortal: React.FC = () => {
-  const { branches, services, employees, settings, refreshData } = useApp();
+  const { slug } = useParams<{ slug: string }>();
+  const { branches, services, employees, settings, refreshData, isLoading } = useApp();
 
   // Booking Flow Steps: 1 (Details Select), 2 (User details), 3 (Payment checkout), 4 (Success Receipt)
   const [step, setStep] = useState(1);
@@ -52,6 +56,18 @@ export const BookingPortal: React.FC = () => {
 
   // Available slots based on shift hours config
   const availableSlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00"];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-brand-500" />
+      </div>
+    );
+  }
+
+  if (!slug || !mockDbInstance.isValidPublicBookingSlug(slug)) {
+    return <BusinessNotFound slug={slug} />;
+  }
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
