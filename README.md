@@ -42,19 +42,19 @@ Enterprise Appointment & Reservation Management Platform built for businesses th
 ## Screenshots
 
 ### Login
-![Login](screenshots/login.png)
+![Login](screenshots/login.PNG)
 
 ### Dashboard
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](screenshots/dashboard.PNG)
 
 ### Reservations
-![Reservations](screenshots/reservations.png)
+![Reservations](screenshots/reservations.PNG)
 
 ### Customers
-![Customers](screenshots/customers.png)
+![Customers](screenshots/customers.PNG)
 
 ### Public Booking Portal
-![Public Booking Portal](screenshots/publicbookingportal.png)
+![Public Booking Portal](screenshots/publicbookingportal.PNG)
 
 ---
 
