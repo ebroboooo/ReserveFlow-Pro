@@ -43,8 +43,6 @@ Note: This is a portfolio demonstration. Production authentication and backend s
 
 ## Screenshots
 
-## Screenshots
-
 ### Login
 ![Login](screenshots/login.PNG)
 
