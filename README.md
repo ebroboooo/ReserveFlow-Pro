@@ -6,11 +6,15 @@ Enterprise Appointment & Reservation Management Platform built for businesses th
 
 🔗 **Demo:** reserve-flow-pro.vercel.app
 
-### Demo Account
+Demo Access
 
-**Email:** *(Demo email)*
+This project is currently running in Demo Mode.
 
-**Password:** *(Demo password)*
+Email: admin@reserveflow.com
+Authentication: No password required
+Role: Select any available role from the dropdown menu to explore the application.
+
+Note: This is a portfolio demonstration. Production authentication and backend services are planned for a future release.
 
 ---
 
