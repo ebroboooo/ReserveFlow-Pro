@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.png" alt="ReserveFlow Pro Banner" width="100%">
+  <img src="screenshots/banner.png" alt="ReserveFlow Pro Banner" width="100%">
 </p>
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://reserve-flow-pro.vercel.app)
