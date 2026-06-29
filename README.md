@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="ReserveFlow Pro Banner" width="100%">
+</p>
+
 [![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://reserve-flow-pro.vercel.app)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge\&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge\&logo=typescript)](https://www.typescriptlang.org/)
