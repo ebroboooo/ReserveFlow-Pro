@@ -1,3 +1,10 @@
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://reserve-flow-pro.vercel.app)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge\&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge\&logo=typescript)](https://www.typescriptlang.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?style=for-the-badge\&logo=firebase)](https://firebase.google.com/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](#)
+
+
 # ReserveFlow Pro
 
 Enterprise Appointment & Reservation Management Platform built for businesses that require real-time booking, scheduling, customer management, and staff coordination.
