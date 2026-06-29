@@ -39,7 +39,22 @@ Enterprise Appointment & Reservation Management Platform built for businesses th
 
 ## Screenshots
 
-> Screenshots will be added soon.
+## Screenshots
+
+### Login
+![Login](screenshots/login.png)
+
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+### Reservations
+![Reservations](screenshots/reservations.png)
+
+### Customers
+![Customers](screenshots/customers.png)
+
+### Public Booking Portal
+![Public Booking Portal](screenshots/publicbookingportal.png)
 
 ---
 
