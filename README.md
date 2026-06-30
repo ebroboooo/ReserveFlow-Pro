@@ -1,102 +1,223 @@
+
+# SmileCare Pro
+
 <p align="center">
   <img src="assets/banner.png" alt="SmileCare Pro Banner" width="100%">
 </p>
 
+<p align="center">
+
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://smilecarecloud.vercel.app)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-Ready-FFCA28?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](#)
+[![MIT License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](#license)
 
-# SmileCare Pro
+</p>
 
-Enterprise dental clinic management SaaS for appointment scheduling, patient records, doctor coordination, billing, waitlists, and a public patient booking portal.
+> **Modern Dental Clinic Management SaaS** built with **React, TypeScript, Firebase, Tailwind CSS and Vite**.  
+> Designed as a production-style portfolio project demonstrating appointment scheduling, patient management, doctor coordination, reporting, multilingual support and a responsive administration dashboard.
 
-## Demo Access
+## 🌐 Live Demo
 
-This project runs in **portfolio demo mode** with a local mock database.
+**Demo:** https://smilecarecloud.vercel.app
 
-| Field | Value |
-|-------|-------|
-| Staff login URL | `/login` |
-| Email | `admin@smilecare.com` |
-| Password | Not required (demo) |
-| Roles | Super Admin, Clinic Owner, Receptionist, Doctor / Staff |
+### Demo Access
 
-**Public booking portal:** `/book/smilecare-clinic`
+| Item | Value |
+|------|-------|
+| Staff Login | `/login` |
+| Email | Any email |
+| Password | Not required (Demo Mode) |
+| Roles | Super Admin, Clinic Owner, Receptionist, Doctor |
 
-## Features
+Public Booking Portal:
 
-- Patient management with profiles, tags, and visit history
-- Doctor scheduling with weekly availability and conflict detection
-- Appointment calendar with status workflow and payment tracking
-- Public online booking wizard with validation and demo payments
-- Patient inquiry pipeline (CRM-style leads)
-- Waitlist queue with promotion to appointments
-- Reports and analytics with CSV export
-- Multi-branch clinic support
-- Arabic / English with RTL layout support
-- Progressive Web App (PWA)
-- Firebase Firestore integration (optional via environment config)
+`/book/smilecare-clinic`
 
-## Tech Stack
+---
 
-- React 19 + TypeScript
-- Vite 8
-- Tailwind CSS 4
-- React Router 7
-- Firebase (optional backend)
-- Lucide React icons
+# ✨ Highlights
 
-## Run Locally
+- Public marketing website
+- Online appointment booking wizard
+- Patient management
+- Doctor scheduling
+- Calendar management
+- Waitlist
+- Reports & analytics
+- Multi-branch ready
+- English & Arabic (RTL)
+- Progressive Web App
+- Firebase-ready architecture
+- Responsive design
+
+---
+
+# 📸 Screenshots
+
+> Replace filenames below with your actual screenshots if different.
+
+- Landing Page
+- Login
+- Dashboard
+- Calendar
+- Patients
+- Doctors
+- Appointments
+- Booking Portal
+- Reports
+- Settings
+
+---
+
+# 🏥 Core Modules
+
+| Module | Description |
+|---------|-------------|
+| Landing Website | Professional clinic website with services, doctors and booking CTA |
+| Booking Portal | Guided appointment booking with validation |
+| Dashboard | Operational overview with KPIs |
+| Patients | Manage patient records and history |
+| Doctors | Doctor profiles, schedules and availability |
+| Appointments | Complete booking lifecycle |
+| Waitlist | Queue management |
+| Reports | Operational analytics and exports |
+| Settings | Clinic configuration |
+
+---
+
+# 👥 User Roles
+
+- Super Admin
+- Clinic Owner
+- Receptionist
+- Doctor
+
+---
+
+# 🛠 Technology Stack
+
+| Category | Technology |
+|----------|------------|
+| Frontend | React 19 |
+| Language | TypeScript |
+| Build Tool | Vite |
+| Styling | Tailwind CSS 4 |
+| Backend | Firebase (optional) |
+| Database | Firestore |
+| Routing | React Router |
+| State | Context API |
+| Icons | Lucide React |
+| Deployment | Vercel |
+| PWA | Supported |
+
+---
+
+# 📂 Project Structure
+
+```text
+src/
+├── components/
+├── context/
+├── db/
+├── firebase/
+├── hooks/
+├── pages/
+├── types/
+├── utils/
+└── assets/
+```
+
+---
+
+# 🚀 Getting Started
 
 ```bash
-git clone <your-repo-url>
-cd Project2_reservation_system
+git clone https://github.com/ebroboooo/SmileCare-Pro.git
+cd SmileCare-Pro
 npm install
 npm run dev
 ```
 
-## Build for Production
+Production build
 
 ```bash
 npm run build
 npm run preview
 ```
 
-## Environment Variables
+---
 
-Copy `.env.example` to `.env` and configure:
+# ⚙ Environment
 
-```bash
+```env
 VITE_USE_FIRESTORE=false
 VITE_FIREBASE_API_KEY=
 VITE_FIREBASE_AUTH_DOMAIN=
 VITE_FIREBASE_PROJECT_ID=
 ```
 
-## Project Structure
+---
 
-```
-src/
-├── components/     # UI pages and shared components
-├── context/        # Auth, app state, toasts
-├── db/             # Repository layer (mock + Firestore)
-├── firebase/       # Firebase configuration
-├── types/          # TypeScript domain types
-└── utils/          # Adapters, validation, translations
-```
+# ☁ Deployment
 
-## Roadmap
+Optimized for Vercel.
 
-- Production Firebase Authentication
-- Email and SMS appointment reminders
-- Google Calendar two-way sync
-- Insurance verification workflow
-- Multi-tenant clinic onboarding
+For production:
 
-## Author
+- Configure Firebase credentials.
+- Enable Firestore.
+- Update environment variables.
+- Deploy to Vercel.
+
+---
+
+# 🔒 Security
+
+- Protected routing
+- Input validation
+- Repository pattern
+- Environment-based configuration
+- Firebase-ready architecture
+
+---
+
+# ⚡ Performance
+
+- Lazy-loaded routes
+- Reusable components
+- Responsive UI
+- Optimized assets
+- Modern React architecture
+
+---
+
+# 🗺 Roadmap
+
+- Firebase Authentication
+- Email notifications
+- SMS reminders
+- Google Calendar sync
+- Insurance workflows
+- AI scheduling assistant
+- Multi-tenant support
+
+---
+
+# 💼 Portfolio Value
+
+SmileCare Pro demonstrates the ability to design and build production-quality business applications including booking systems, CRM functionality, administrative dashboards, multilingual interfaces, responsive layouts and scalable frontend architecture.
+
+---
+
+# 👨‍💻 Author
 
 **Ebram Sherif**
 
 GitHub: https://github.com/ebroboooo
+
+---
+
+## ⭐ If you like this project, consider starring the repository.
