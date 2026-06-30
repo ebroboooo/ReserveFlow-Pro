@@ -27,7 +27,7 @@ export const LeadsPipeline: React.FC = () => {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const org = "org-reserveflow-pro";
+    const org = "org-smilecare-pro";
     await db.leads.create(org, {
       branchId: "br-main",
       fullName: formData.fullName,
@@ -47,7 +47,7 @@ export const LeadsPipeline: React.FC = () => {
   };
 
   const handleUpdateStatus = async (id: string, name: string, nextStatus: LeadStatus) => {
-    const org = "org-reserveflow-pro";
+    const org = "org-smilecare-pro";
     await db.leads.update(org, id, { status: nextStatus });
     await dispatchAuditLog("Lead Advanced", `Moved CRM Lead ${name} status to ${nextStatus}`);
     await refreshData();
@@ -59,13 +59,13 @@ export const LeadsPipeline: React.FC = () => {
       {/* Header Panel */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-white">Lead Management Pipeline</h2>
+          <h2 className="text-xl font-bold text-slate-900">Lead Management Pipeline</h2>
           <p className="text-xs text-slate-500">Nurture and convert customer leads into verified appointments</p>
         </div>
         
         <button 
           onClick={() => setModalOpen(true)}
-          className="glass-btn-primary px-3 py-2 text-xs flex items-center gap-1.5"
+          className="btn-primary px-3 py-2 text-xs flex items-center gap-1.5"
         >
           <Plus className="h-4 w-4" />
           <span>Add New Lead</span>
@@ -74,15 +74,15 @@ export const LeadsPipeline: React.FC = () => {
 
       {/* CRM Stats Summary Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="glass-card p-5 rounded-2xl border-slate-800/60 bg-gradient-to-b from-slate-900/60 to-slate-950/40">
+        <div className="card p-5 rounded-2xl border-slate-200 bg-gradient-to-b from-slate-900/60 to-slate-950/40">
           <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Total Pipeline Value</p>
-          <h4 className="text-2xl font-bold text-brand-300 mt-1">{totalPipelineVal.toLocaleString()} {currency}</h4>
+          <h4 className="text-2xl font-bold text-brand-700 mt-1">{totalPipelineVal.toLocaleString()} {currency}</h4>
         </div>
-        <div className="glass-card p-5 rounded-2xl border-slate-800/60 bg-gradient-to-b from-slate-900/60 to-slate-950/40">
+        <div className="card p-5 rounded-2xl border-slate-200 bg-gradient-to-b from-slate-900/60 to-slate-950/40">
           <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Active Deals</p>
-          <h4 className="text-2xl font-bold text-white mt-1">{activeLeads} Leads</h4>
+          <h4 className="text-2xl font-bold text-slate-900 mt-1">{activeLeads} Leads</h4>
         </div>
-        <div className="glass-card p-5 rounded-2xl border-slate-800/60 bg-gradient-to-b from-slate-900/60 to-slate-950/40">
+        <div className="card p-5 rounded-2xl border-slate-200 bg-gradient-to-b from-slate-900/60 to-slate-950/40">
           <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Lead Acquisition Rate</p>
           <h4 className="text-2xl font-bold text-green-400 mt-1">+24% month-on-month</h4>
         </div>
@@ -94,10 +94,10 @@ export const LeadsPipeline: React.FC = () => {
           const stageLeads = leads.filter(l => l.status === stage);
           
           return (
-            <div key={stage} className="bg-slate-900/20 border border-slate-850 p-4 rounded-2xl min-w-[220px] space-y-4 flex flex-col">
-              <div className="flex items-center justify-between border-b border-slate-850 pb-2">
-                <span className="text-xs font-bold text-white tracking-wide">{stage}</span>
-                <span className="text-[10px] bg-slate-800 text-slate-400 font-bold px-2 py-0.5 rounded-full">
+            <div key={stage} className="bg-white/20 border border-slate-200 p-4 rounded-2xl min-w-[220px] space-y-4 flex flex-col">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                <span className="text-xs font-bold text-slate-900 tracking-wide">{stage}</span>
+                <span className="text-[10px] bg-slate-100 text-slate-400 font-bold px-2 py-0.5 rounded-full">
                   {stageLeads.length}
                 </span>
               </div>
@@ -107,20 +107,20 @@ export const LeadsPipeline: React.FC = () => {
                   <p className="text-[10px] text-slate-600 text-center py-8">Drop leads here</p>
                 ) : (
                   stageLeads.map(lead => (
-                    <div key={lead.id} className="glass-card p-4 rounded-xl border-slate-800 flex flex-col justify-between gap-3 bg-slate-900/40 hover:border-brand-500/20 transition-all">
+                    <div key={lead.id} className="card p-4 rounded-xl border-slate-200 flex flex-col justify-between gap-3 bg-slate-50 hover:border-brand-500/20 transition-all">
                       <div>
-                        <h5 className="text-xs font-bold text-white">{lead.fullName}</h5>
-                        <p className="text-[9px] text-brand-400 font-bold mt-0.5">{lead.source}</p>
-                        <p className="text-xs font-bold text-slate-200 mt-1">{lead.value} {currency}</p>
+                        <h5 className="text-xs font-bold text-slate-900">{lead.fullName}</h5>
+                        <p className="text-[9px] text-brand-600 font-bold mt-0.5">{lead.source}</p>
+                        <p className="text-xs font-bold text-slate-800 mt-1">{lead.value} {currency}</p>
                       </div>
 
                       {lead.notes && (
-                        <p className="text-[10px] text-slate-400 italic line-clamp-2 leading-relaxed bg-slate-950/30 p-2 rounded-lg">
+                        <p className="text-[10px] text-slate-400 italic line-clamp-2 leading-relaxed bg-slate-50/30 p-2 rounded-lg">
                           {lead.notes}
                         </p>
                       )}
 
-                      <div className="flex items-center justify-between pt-2 border-t border-slate-850/60">
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-200">
                         <span className="text-[9px] text-slate-500 font-semibold">
                           {new Date(lead.createdAt).toLocaleDateString([], {month:'short', day:'numeric'})}
                         </span>
@@ -142,7 +142,7 @@ export const LeadsPipeline: React.FC = () => {
                                 const nextStage = STAGES[currIdx + 1];
                                 if (nextStage) handleUpdateStatus(lead.id, lead.fullName, nextStage);
                               }}
-                              className="p-1 hover:bg-brand-500/10 text-brand-400 rounded"
+                              className="p-1 hover:bg-brand-500/10 text-brand-600 rounded"
                               title="Advance Lead"
                             >
                               <MoveRight className="h-3.5 w-3.5" />
@@ -161,9 +161,9 @@ export const LeadsPipeline: React.FC = () => {
 
       {/* Add Lead Modal Dialog */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in-95 duration-150">
-            <h3 className="text-lg font-bold text-white mb-4">Add CRM Lead</h3>
+        <div className="fixed inset-0 bg-slate-50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in-95 duration-150">
+            <h3 className="text-lg font-bold text-slate-900 mb-4">Add CRM Lead</h3>
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
@@ -173,7 +173,7 @@ export const LeadsPipeline: React.FC = () => {
                   required
                   value={formData.fullName}
                   onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
-                  className="w-full glass-input text-xs"
+                  className="w-full input-field text-xs"
                 />
               </div>
 
@@ -185,7 +185,7 @@ export const LeadsPipeline: React.FC = () => {
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    className="w-full glass-input text-xs"
+                    className="w-full input-field text-xs"
                   />
                 </div>
                 <div>
@@ -195,7 +195,7 @@ export const LeadsPipeline: React.FC = () => {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    className="w-full glass-input text-xs"
+                    className="w-full input-field text-xs"
                   />
                 </div>
               </div>
@@ -206,7 +206,7 @@ export const LeadsPipeline: React.FC = () => {
                   <select
                     value={formData.source}
                     onChange={(e) => setFormData(prev => ({ ...prev, source: e.target.value }))}
-                    className="w-full glass-input text-xs"
+                    className="w-full input-field text-xs"
                   >
                     <option value="Google Ads">Google Ads</option>
                     <option value="Instagram Promo">Instagram Promo</option>
@@ -221,7 +221,7 @@ export const LeadsPipeline: React.FC = () => {
                     required
                     value={formData.value}
                     onChange={(e) => setFormData(prev => ({ ...prev, value: Number(e.target.value) }))}
-                    className="w-full glass-input text-xs"
+                    className="w-full input-field text-xs"
                   />
                 </div>
               </div>
@@ -232,22 +232,22 @@ export const LeadsPipeline: React.FC = () => {
                   value={formData.notes}
                   onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                   rows={3}
-                  className="w-full glass-input text-xs"
+                  className="w-full input-field text-xs"
                   placeholder="Details of client requirements..."
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-4 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="glass-btn-secondary px-4 py-2 text-xs"
+                  className="btn-secondary px-4 py-2 text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="glass-btn-primary px-4 py-2 text-xs"
+                  className="btn-primary px-4 py-2 text-xs"
                 >
                   Add Lead
                 </button>

@@ -1,14 +1,6 @@
 import type { 
-  Customer, 
-  Reservation, 
-  Service, 
-  Employee, 
-  Lead, 
-  Notification, 
-  WaitlistRecord, 
-  AuditLog, 
-  SystemSettings,
-  Branch
+  Branch, Customer, Service, Employee, EmployeeSchedule, Reservation, 
+  Lead, Notification, WaitlistRecord, SystemSettings, AuditLog 
 } from '../types';
 import { DEFAULT_PUBLIC_BOOKING_SLUG } from '../types';
 import type { 
@@ -37,133 +29,101 @@ import type {
 const uuid = () => Math.random().toString(36).substring(2, 9);
 
 // Default seed structures
-const DEFAULT_ORG_ID = "org-reserveflow-pro";
+const DEFAULT_ORG_ID = "org-smilecare-pro";
 
 // Standard preset data generator
-export const getPresetSeeds = (preset: string, orgId: string = DEFAULT_ORG_ID) => {
+export const getPresetSeeds = (orgId: string = DEFAULT_ORG_ID) => {
   const branches: Branch[] = [
-    { id: "br-main", orgId, name: "Main Branch (Downtown)", address: "123 Business Avenue, City Center", phone: "+1 (555) 100-2001", email: "downtown@reserveflow.com", timezone: "UTC+3", isActive: true },
-    { id: "br-sub", orgId, name: "North Side Plaza", address: "78 Shopping Mall Plaza, Sector 4", phone: "+1 (555) 100-2002", email: "northside@reserveflow.com", timezone: "UTC+3", isActive: true }
+    { id: "br-main", orgId, name: "SmileCare Downtown Clinic", address: "123 Medical Center Blvd, Suite 200", phone: "+1 (555) 100-2001", email: "downtown@smilecare.com", timezone: "UTC+3", isActive: true },
+    { id: "br-sub", orgId, name: "SmileCare North Side", address: "78 Wellness Plaza, Floor 3", phone: "+1 (555) 100-2002", email: "northside@smilecare.com", timezone: "UTC+3", isActive: true }
   ];
 
   const customers: Customer[] = [
-    { id: "cust-1", orgId, fullName: "Sarah Jenkins", phone: "+1 (555) 019-2834", email: "sarah.j@example.com", notes: "Prefers morning slots. VIP customer.", tags: ["VIP", "Regular"], status: "Active", totalSpending: 450, createdAt: new Date(Date.now() - 30 * 86400000).toISOString() },
-    { id: "cust-2", orgId, fullName: "Michael Thorne", phone: "+1 (555) 018-4729", email: "mthorne@example.com", notes: "Allergic to scented products.", tags: ["Sensitive"], status: "Active", totalSpending: 180, createdAt: new Date(Date.now() - 15 * 86400000).toISOString() },
-    { id: "cust-3", orgId, fullName: "Farah Al-Amiri", phone: "+966 50 123 4567", email: "farah.amiri@example.sa", notes: "Prefers Arabic-speaking staff.", tags: ["Local"], status: "Active", totalSpending: 890, createdAt: new Date(Date.now() - 60 * 86400000).toISOString() },
-    { id: "cust-4", orgId, fullName: "David Kim", phone: "+1 (555) 021-9988", email: "dkim@example.com", notes: "", tags: [], status: "Active", totalSpending: 0, createdAt: new Date().toISOString() }
+    { id: "cust-1", orgId, fullName: "Sarah Jenkins", phone: "+1 (555) 019-2834", email: "sarah.j@example.com", notes: "Regular checkups every 6 months. Mild dental anxiety.", tags: ["VIP", "Regular"], status: "Active", totalSpending: 1450, createdAt: new Date(Date.now() - 30 * 86400000).toISOString() },
+    { id: "cust-2", orgId, fullName: "Michael Thorne", phone: "+1 (555) 018-4729", email: "mthorne@example.com", notes: "Allergic to latex. Requires nitrous oxide for procedures.", tags: ["Sensitive"], status: "Active", totalSpending: 680, createdAt: new Date(Date.now() - 15 * 86400000).toISOString() },
+    { id: "cust-3", orgId, fullName: "Farah Al-Amiri", phone: "+966 50 123 4567", email: "farah.amiri@example.sa", notes: "Orthodontic treatment in progress. Prefers female doctors.", tags: ["Orthodontics"], status: "Active", totalSpending: 3200, createdAt: new Date(Date.now() - 60 * 86400000).toISOString() },
+    { id: "cust-4", orgId, fullName: "David Kim", phone: "+1 (555) 021-9988", email: "dkim@example.com", notes: "New patient — first visit scheduled.", tags: ["New Patient"], status: "Active", totalSpending: 0, createdAt: new Date().toISOString() }
   ];
 
   let services: Service[] = [];
   let employees: Employee[] = [];
 
-  const defaultWeeklySchedule = (): any[] => {
+  const defaultWeeklySchedule = (): EmployeeSchedule[] => {
     return [0, 1, 2, 3, 4, 5, 6].map(day => ({
       dayOfWeek: day,
       start: "09:00",
       end: "17:00",
-      isWorking: day !== 0 && day !== 6, // Mon to Fri
+      isWorking: day !== 0 && day !== 6,
       breaks: [{ start: "12:00", end: "13:00" }]
     }));
   };
 
-  if (preset === 'Clinic') {
-    services = [
-      { id: "srv-1", orgId, branchIds: ["br-main", "br-sub"], name: "General Practitioner Consultation", description: "Standard physical checkup and clinical assessment.", duration: 30, price: 120, category: "Consultation", status: "Active" },
-      { id: "srv-2", orgId, branchIds: ["br-main"], name: "Specialist Pediatric Assessment", description: "Dedicated pediatric review and guidance.", duration: 45, price: 180, category: "Pediatrics", status: "Active" },
-      { id: "srv-3", orgId, branchIds: ["br-main", "br-sub"], name: "Physiotherapy Session", description: "Therapeutic session to restore movement and physical wellness.", duration: 60, price: 150, category: "Therapy", status: "Active" }
-    ];
-    employees = [
-      { id: "emp-1", orgId, branchIds: ["br-main", "br-sub"], name: "Dr. Amanda Ross", role: "General Practitioner", email: "amanda@clinic.com", phone: "+1 (555) 301-4401", status: "Active", schedule: defaultWeeklySchedule() },
-      { id: "emp-2", orgId, branchIds: ["br-main"], name: "Dr. Khalid Mansoor", role: "Pediatric Specialist", email: "khalid@clinic.com", phone: "+1 (555) 301-4402", status: "Active", schedule: defaultWeeklySchedule() },
-      { id: "emp-3", orgId, branchIds: ["br-main", "br-sub"], name: "Sarah Connor (PT)", role: "Physiotherapist", email: "sconnor@clinic.com", phone: "+1 (555) 301-4403", status: "Active", schedule: defaultWeeklySchedule() }
-    ];
-  } else if (preset === 'PlayStation') {
-    services = [
-      { id: "srv-1", orgId, branchIds: ["br-main", "br-sub"], name: "PS5 Standard Room (1 Hour)", description: "Play solo or dual on 4K TV screens.", duration: 60, price: 15, category: "Standard", status: "Active" },
-      { id: "srv-2", orgId, branchIds: ["br-main", "br-sub"], name: "VIP VR Room Experience", description: "Full Virtual Reality room with PSVR2 headset.", duration: 60, price: 35, category: "VIP Room", status: "Active" },
-      { id: "srv-3", orgId, branchIds: ["br-main"], name: "4-Player Tournament Room", description: "Exclusive large-screen room for local tournament play.", duration: 120, price: 50, category: "Standard", status: "Active" }
-    ];
-    employees = [
-      { id: "emp-1", orgId, branchIds: ["br-main", "br-sub"], name: "Alex Mercer", role: "Console Support Agent", email: "alex@lounge.com", phone: "+1 (555) 890-1111", status: "Active", schedule: defaultWeeklySchedule() },
-      { id: "emp-2", orgId, branchIds: ["br-sub"], name: "Faisal Al-Otaibi", role: "Lounge Host", email: "faisal@lounge.com", phone: "+1 (555) 890-2222", status: "Active", schedule: defaultWeeklySchedule() }
-    ];
-  } else if (preset === 'Sports') {
-    services = [
-      { id: "srv-1", orgId, branchIds: ["br-main"], name: "5-a-Side Indoor Pitch (90 min)", description: "Indoor pitch rental with balls, bibs, and water included.", duration: 90, price: 80, category: "Football Pitch", status: "Active" },
-      { id: "srv-2", orgId, branchIds: ["br-main", "br-sub"], name: "Tennis Court Rental (1 Hour)", description: "Outdoor clay court rental.", duration: 60, price: 25, category: "Tennis", status: "Active" },
-      { id: "srv-3", orgId, branchIds: ["br-main", "br-sub"], name: "Professional Coaching Clinic", description: "One-on-one sessions with senior sports instructors.", duration: 60, price: 60, category: "Coaching", status: "Active" }
-    ];
-    employees = [
-      { id: "emp-1", orgId, branchIds: ["br-main", "br-sub"], name: "Coach Marcus Vance", role: "Tennis Specialist", email: "marcus@sports.com", phone: "+1 (555) 777-1111", status: "Active", schedule: defaultWeeklySchedule() },
-      { id: "emp-2", orgId, branchIds: ["br-main"], name: "Sami Ghanam", role: "Football Pitches Coordinator", email: "sami@sports.com", phone: "+1 (555) 777-2222", status: "Active", schedule: defaultWeeklySchedule() }
-    ];
-  } else {
-    // Salon & Barbershop defaults
-    services = [
-      { id: "srv-1", orgId, branchIds: ["br-main", "br-sub"], name: "Classic Haircut & Style", description: "Standard scissor cut, styling, wash, and style consultation.", duration: 45, price: 40, category: "Haircuts", status: "Active" },
-      { id: "srv-2", orgId, branchIds: ["br-main", "br-sub"], name: "Beard Trim & Hot Towel Shave", description: "Relaxing hot towel treatment with razor line edging.", duration: 30, price: 25, category: "Beard Care", status: "Active" },
-      { id: "srv-3", orgId, branchIds: ["br-main"], name: "VIP Keratin Treatment", description: "Premium protein smoothening and restoration.", duration: 120, price: 150, category: "Hair Therapy", status: "Active" }
-    ];
-    employees = [
-      { id: "emp-1", orgId, branchIds: ["br-main", "br-sub"], name: "James R.", role: "Master Barber", email: "james@salon.com", phone: "+1 (555) 203-1991", status: "Active", schedule: defaultWeeklySchedule() },
-      { id: "emp-2", orgId, branchIds: ["br-main"], name: "Layla Younes", role: "Senior Hair Stylist", email: "layla@salon.com", phone: "+1 (555) 203-1992", status: "Active", schedule: defaultWeeklySchedule() },
-      { id: "emp-3", orgId, branchIds: ["br-sub"], name: "Tariq Ali", role: "Styling Assistant", email: "tariq@salon.com", phone: "+1 (555) 203-1993", status: "Active", schedule: defaultWeeklySchedule() }
-    ];
-  }
+  services = [
+    { id: "srv-1", orgId, branchIds: ["br-main", "br-sub"], name: "Dental Cleaning & Exam", description: "Professional teeth cleaning, polishing, and comprehensive oral examination.", duration: 45, price: 120, category: "Preventive", status: "Active" },
+    { id: "srv-2", orgId, branchIds: ["br-main"], name: "Root Canal Treatment", description: "Endodontic treatment to save an infected or damaged tooth.", duration: 90, price: 850, category: "Restorative", status: "Active" },
+    { id: "srv-3", orgId, branchIds: ["br-main", "br-sub"], name: "Teeth Whitening", description: "Professional in-office whitening for a brighter smile.", duration: 60, price: 350, category: "Cosmetic", status: "Active" },
+    { id: "srv-4", orgId, branchIds: ["br-main"], name: "Dental Implant Consultation", description: "Comprehensive evaluation and treatment plan for dental implants.", duration: 30, price: 75, category: "Surgical", status: "Active" },
+    { id: "srv-5", orgId, branchIds: ["br-main", "br-sub"], name: "Orthodontic Consultation", description: "Assessment for braces, aligners, and bite correction options.", duration: 45, price: 100, category: "Orthodontics", status: "Active" }
+  ];
+  employees = [
+    { id: "emp-1", orgId, branchIds: ["br-main", "br-sub"], name: "Dr. Amanda Ross", role: "General Dentist", email: "amanda@smilecare.com", phone: "+1 (555) 301-4401", status: "Active", schedule: defaultWeeklySchedule() },
+    { id: "emp-2", orgId, branchIds: ["br-main"], name: "Dr. Khalid Mansoor", role: "Orthodontist", email: "khalid@smilecare.com", phone: "+1 (555) 301-4402", status: "Active", schedule: defaultWeeklySchedule() },
+    { id: "emp-3", orgId, branchIds: ["br-main", "br-sub"], name: "Dr. Sarah Chen", role: "Pediatric Dentist", email: "sarah@smilecare.com", phone: "+1 (555) 301-4403", status: "Active", schedule: defaultWeeklySchedule() }
+  ];
 
   const todayStr = new Date().toISOString().split('T')[0];
 
   const reservations: Reservation[] = [
     { 
       id: "res-1", orgId, branchId: "br-main", customerId: "cust-1", serviceId: "srv-1", employeeId: "emp-1", 
-      date: todayStr, time: "10:00", duration: services[0].duration, notes: "Needs extra care.", status: "Confirmed", 
+      date: todayStr, time: "10:00", duration: services[0].duration, notes: "Six-month checkup. Mild dental anxiety — allow extra time.", status: "Confirmed", 
       paymentStatus: "Paid", paymentDetails: { method: "Stripe", amount: services[0].price, transactionId: "txn_str_123", paidAt: new Date().toISOString() }, 
       createdAt: new Date().toISOString() 
     },
     { 
       id: "res-2", orgId, branchId: "br-main", customerId: "cust-2", serviceId: "srv-2", employeeId: "emp-2", 
-      date: todayStr, time: "14:00", duration: services[1].duration, notes: "No fragrance.", status: "Pending", 
+      date: todayStr, time: "14:00", duration: services[1].duration, notes: "Latex allergy — use nitrous oxide for comfort.", status: "Pending", 
       paymentStatus: "Unpaid", paymentDetails: { method: "Cash", amount: services[1].price }, 
       createdAt: new Date().toISOString() 
     },
     { 
       id: "res-3", orgId, branchId: "br-sub", customerId: "cust-3", serviceId: "srv-1", employeeId: "emp-1", 
-      date: todayStr, time: "11:30", duration: services[0].duration, notes: "RTL booking test.", status: "Confirmed", 
+      date: todayStr, time: "11:30", duration: services[0].duration, notes: "Orthodontic follow-up after cleaning.", status: "Confirmed", 
       paymentStatus: "Authorized", paymentDetails: { method: "PayPal", amount: services[0].price, transactionId: "txn_pay_abc" }, 
       createdAt: new Date().toISOString() 
     }
   ];
 
   const leads: Lead[] = [
-    { id: "lead-1", orgId, branchId: "br-main", fullName: "Robert Smith", phone: "+1 (555) 999-8888", email: "rsmith@web.com", source: "Website Contact Form", status: "New", value: 120, notes: "Interested in recurring VIP treatments.", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: "lead-2", orgId, branchId: "br-main", fullName: "Yasmin Farooq", phone: "+966 55 987 6543", email: "yasmin@agency.sa", source: "Instagram Promo", status: "Contacted", value: 300, notes: "Inquired about group bookings.", createdAt: new Date(Date.now() - 3 * 86400000).toISOString(), updatedAt: new Date().toISOString() },
-    { id: "lead-3", orgId, branchId: "br-sub", fullName: "George Miller", phone: "+1 (555) 777-6666", email: "gmiller@corp.com", source: "Google Ads", status: "Interested", value: 80, notes: "Called to check court rentals.", createdAt: new Date(Date.now() - 5 * 86400000).toISOString(), updatedAt: new Date().toISOString() }
+    { id: "lead-1", orgId, branchId: "br-main", fullName: "Robert Smith", phone: "+1 (555) 999-8888", email: "rsmith@web.com", source: "Website Contact Form", status: "New", value: 350, notes: "Interested in teeth whitening and regular cleanings.", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: "lead-2", orgId, branchId: "br-main", fullName: "Yasmin Farooq", phone: "+966 55 987 6543", email: "yasmin@agency.sa", source: "Google Search", status: "Contacted", value: 850, notes: "Inquired about root canal treatment pricing.", createdAt: new Date(Date.now() - 3 * 86400000).toISOString(), updatedAt: new Date().toISOString() },
+    { id: "lead-3", orgId, branchId: "br-sub", fullName: "George Miller", phone: "+1 (555) 777-6666", email: "gmiller@corp.com", source: "Referral", status: "Interested", value: 100, notes: "Referred by Sarah Jenkins. Needs orthodontic consultation.", createdAt: new Date(Date.now() - 5 * 86400000).toISOString(), updatedAt: new Date().toISOString() }
   ];
 
   const waitlist: WaitlistRecord[] = [
-    { id: "wait-1", orgId, branchId: "br-main", customerId: "cust-4", serviceId: "srv-1", employeeId: "emp-1", date: todayStr, timeSlotPreference: "Morning", notes: "Urgent slot needed", status: "Waiting", createdAt: new Date().toISOString() }
+    { id: "wait-1", orgId, branchId: "br-main", customerId: "cust-4", serviceId: "srv-1", employeeId: "emp-1", date: todayStr, timeSlotPreference: "Morning", notes: "Urgent cleaning needed before travel", status: "Waiting", createdAt: new Date().toISOString() }
   ];
 
   const notifications: Notification[] = [
-    { id: "not-1", orgId, branchId: "br-main", title: "New Lead Registered", message: "Robert Smith has completed the lead inquiry.", read: false, type: "LeadCreated", createdAt: new Date().toISOString() },
-    { id: "not-2", orgId, branchId: "br-sub", title: "Booking Confirmation Paid", message: "Sarah Jenkins completed payment via Stripe.", read: true, type: "BookingCreated", createdAt: new Date(Date.now() - 4 * 3600000).toISOString() }
+    { id: "not-1", orgId, branchId: "br-main", title: "New Patient Inquiry", message: "Robert Smith submitted an inquiry about teeth whitening.", read: false, type: "LeadCreated", createdAt: new Date().toISOString() },
+    { id: "not-2", orgId, branchId: "br-sub", title: "Appointment Confirmed", message: "Sarah Jenkins confirmed her dental cleaning appointment.", read: true, type: "BookingCreated", createdAt: new Date(Date.now() - 4 * 3600000).toISOString() }
   ];
 
   const auditLogs: AuditLog[] = [
-    { id: "log-1", orgId, userId: "usr-admin", userName: "Admin", timestamp: new Date().toISOString(), action: "Preset Loaded", details: `Seeded business preset structure: ${preset}` }
+    { id: "log-1", orgId, userId: "usr-admin", userName: "Admin", timestamp: new Date().toISOString(), action: "Demo Data Loaded", details: "SmileCare dental clinic demo dataset initialized" }
   ];
 
   const settings: SystemSettings = {
     orgId,
-    businessName: `Apex ${preset} Pro`,
+    businessName: 'SmileCare Dental Clinic',
     publicSlug: DEFAULT_PUBLIC_BOOKING_SLUG,
-    address: "777 Grand Boulevard, Suite 500",
+    address: "777 Medical Boulevard, Suite 500",
     phone: "+1 (555) 880-9900",
-    email: `support@apex-${preset.toLowerCase()}.com`,
-    currency: preset === 'Sports' || preset === 'Clinic' ? 'SAR' : 'USD',
+    email: 'hello@smilecare.com',
+    currency: 'USD',
     language: "en",
     isRtl: false,
-    activePreset: preset as any,
+    activePreset: 'Dental',
     features: {
       stripeEnabled: true,
       paypalEnabled: true,
@@ -195,7 +155,7 @@ export const getEmptySeeds = (orgId: string = DEFAULT_ORG_ID) => {
 
   const settings: SystemSettings = {
     orgId,
-    businessName: "My Business",
+    businessName: "My Dental Clinic",
     publicSlug: DEFAULT_PUBLIC_BOOKING_SLUG,
     address: "",
     phone: "",
@@ -236,15 +196,27 @@ export const getEmptySeeds = (orgId: string = DEFAULT_ORG_ID) => {
 };
 
 // Mock Engine State Provider
+const DB_STORAGE_KEY = "smilecare_db_store";
+const LEGACY_DB_STORAGE_KEY = "reserveflow_db_store";
+
 class LocalMockDatabase {
-  private key = "reserveflow_db_store";
+  private key = DB_STORAGE_KEY;
   public data: any;
 
   constructor() {
     this.load();
   }
 
+  private migrateLegacyStorage() {
+    const legacy = localStorage.getItem(LEGACY_DB_STORAGE_KEY);
+    if (legacy && !localStorage.getItem(DB_STORAGE_KEY)) {
+      localStorage.setItem(DB_STORAGE_KEY, legacy);
+      localStorage.removeItem(LEGACY_DB_STORAGE_KEY);
+    }
+  }
+
   public load() {
+    this.migrateLegacyStorage();
     const saved = localStorage.getItem(this.key);
     if (saved) {
       try {
@@ -255,8 +227,8 @@ class LocalMockDatabase {
         console.error("Failed to load local DB state", e);
       }
     }
-    // Default to Salon preset
-    this.resetPreset("Salon");
+    // Default to Dental clinic preset
+    this.resetPreset("Dental");
   }
 
   private ensureDemoBusinessSlug() {
@@ -279,8 +251,8 @@ class LocalMockDatabase {
     localStorage.setItem(this.key, JSON.stringify(this.data));
   }
 
-  public resetPreset(preset: string) {
-    this.data = getPresetSeeds(preset);
+  public resetPreset(_preset?: string) {
+    this.data = getPresetSeeds();
     this.save();
   }
 

@@ -114,8 +114,8 @@ export class EmailNotificationAdapter implements INotificationChannel {
 export class EnterpriseNotificationHub {
   static async dispatchBookingAlert(orgId: string, reservation: Reservation, customerName: string, serviceName: string, employeeName: string) {
     const settings = await db.settings.get(orgId);
-    const message = `ReserveFlow Pro: Hello ${customerName}, your appointment for ${serviceName} with ${employeeName} is scheduled on ${reservation.date} at ${reservation.time}. Thank you!`;
-    const emailMessage = `Dear ${customerName},\n\nYour appointment for ${serviceName} with ${employeeName} has been scheduled.\nDate: ${reservation.date}\nTime: ${reservation.time}\n\nWarm regards,\nReserveFlow Pro Management`;
+    const message = `SmileCare Pro: Hello ${customerName}, your appointment for ${serviceName} with ${employeeName} is scheduled on ${reservation.date} at ${reservation.time}. Thank you!`;
+    const emailMessage = `Dear ${customerName},\n\nYour appointment for ${serviceName} with ${employeeName} has been scheduled.\nDate: ${reservation.date}\nTime: ${reservation.time}\n\nWarm regards,\nSmileCare Pro Management`;
 
     if (settings.features.whatsappNotifications) {
       const wa = new WhatsAppNotificationAdapter();
@@ -124,7 +124,7 @@ export class EnterpriseNotificationHub {
 
     if (settings.features.telegramNotifications) {
       const tg = new TelegramNotificationAdapter();
-      await tg.send("t.me/reserveflow_client_alert", message);
+      await tg.send("t.me/smilecare_clinic_alerts", message);
     }
 
     const mail = new EmailNotificationAdapter();

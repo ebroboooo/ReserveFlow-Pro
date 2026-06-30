@@ -22,17 +22,17 @@ function showUpdateToast(onRefresh: () => void) {
   const toast = document.createElement('div');
   toast.id = TOAST_ID;
   toast.className =
-    'fixed bottom-6 right-6 z-[9999] max-w-sm glass-panel border border-slate-800 shadow-2xl rounded-2xl p-4 animate-in fade-in slide-in-from-bottom-4 duration-300';
+    'fixed bottom-6 right-6 z-[9999] max-w-sm panel border border-slate-200 shadow-2xl rounded-2xl p-4 animate-in fade-in slide-in-from-bottom-4 duration-300';
   toast.setAttribute('role', 'status');
   toast.setAttribute('aria-live', 'polite');
 
   const message = document.createElement('p');
-  message.className = 'text-sm text-slate-200 font-medium leading-snug mb-3';
+  message.className = 'text-sm text-slate-800 font-medium leading-snug mb-3';
   message.textContent = 'A new version is available. Refresh to update.';
 
   const refreshButton = document.createElement('button');
   refreshButton.type = 'button';
-  refreshButton.className = 'glass-btn-primary w-full py-2.5 text-xs font-semibold';
+  refreshButton.className = 'btn-primary w-full py-2.5 text-xs font-semibold';
   refreshButton.textContent = 'Refresh';
   refreshButton.addEventListener('click', () => {
     refreshButton.disabled = true;
@@ -97,7 +97,7 @@ export function register() {
         scheduleUpdateChecks(registration);
       })
       .catch((error) => {
-        console.error('ReserveFlow Pro: Service Worker registration failed.', error);
+        console.error('SmileCare Pro: Service Worker registration failed.', error);
       });
   });
 }

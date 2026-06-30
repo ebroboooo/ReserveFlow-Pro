@@ -23,7 +23,7 @@ interface AppContextType {
   isLoading: boolean;
   refreshData: () => Promise<void>;
   dispatchAuditLog: (action: string, details: string) => Promise<void>;
-  seedBusinessPreset: (presetName: 'Clinic' | 'Salon' | 'Barbershop' | 'PlayStation' | 'Sports' | 'Consultation') => Promise<void>;
+  seedBusinessPreset: () => Promise<void>;
   resetEmptyWorkspace: () => Promise<void>;
   unreadNotificationCount: number;
 }
@@ -46,10 +46,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isLoading, setIsLoading] = useState(true);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
 
-  const orgId = currentUser?.orgId || "org-reserveflow-pro";
+  const orgId = currentUser?.orgId || "org-smilecare-pro";
 
   const refreshData = useCallback(async () => {
-    const org = currentUser?.orgId || "org-reserveflow-pro";
+    const org = currentUser?.orgId || "org-smilecare-pro";
     try {
       const [
         bList, cList, sList, eList, rList, lList, nList, wList, setts, logs, unread
@@ -110,13 +110,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setAuditLogs(logs);
   };
 
-  const seedBusinessPreset = async (presetName: 'Clinic' | 'Salon' | 'Barbershop' | 'PlayStation' | 'Sports' | 'Consultation') => {
+  const seedBusinessPreset = async () => {
     setIsLoading(true);
-    mockDbInstance.resetPreset(presetName);
-    
-    await db.settings.update(orgId, { activePreset: presetName });
+    mockDbInstance.resetPreset('Dental');
+
+    await db.settings.update(orgId, { activePreset: 'Dental' });
     await refreshData();
-    await dispatchAuditLog("Preset Seeding", `Configured business workspace preset: ${presetName}`);
+    await dispatchAuditLog('Demo Data Loaded', 'Loaded SmileCare dental clinic demo dataset');
   };
 
   const resetEmptyWorkspace = async () => {

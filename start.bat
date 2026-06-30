@@ -1,6 +1,6 @@
 @echo off
 echo ========================================================
-echo Starting ReserveFlow Pro - SaaS Development Server
+echo Starting SmileCare Pro - Development Server
 echo ========================================================
 echo.
 

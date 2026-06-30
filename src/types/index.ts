@@ -165,7 +165,7 @@ export interface AuditLog {
   details: string;
 }
 
-export const DEFAULT_PUBLIC_BOOKING_SLUG = 'apex-preset';
+export const DEFAULT_PUBLIC_BOOKING_SLUG = 'smilecare-clinic';
 
 export interface SystemSettings {
   orgId: string;
@@ -178,7 +178,7 @@ export interface SystemSettings {
   currency: string; // e.g., USD, AED, SAR, EGP
   language: 'en' | 'ar';
   isRtl: boolean;
-  activePreset?: 'Clinic' | 'Salon' | 'Barbershop' | 'PlayStation' | 'Sports' | 'Consultation';
+  activePreset?: 'Dental';
   // Enabled modules
   features: {
     stripeEnabled: boolean;

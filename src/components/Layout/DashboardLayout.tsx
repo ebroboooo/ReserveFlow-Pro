@@ -4,40 +4,22 @@ import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { db } from '../../db';
 import { translations } from '../../utils/translations';
-import { 
-  LayoutDashboard, 
-  Calendar, 
-  Clock, 
-  Users, 
-  GitMerge, 
-  Briefcase, 
-  UserCheck, 
-  BarChart3, 
-  Settings, 
-  LogOut, 
-  Bell, 
-  Globe, 
-  Building,
-  Menu,
-  X,
-  Sparkles
+import { DEFAULT_PUBLIC_BOOKING_SLUG } from '../../types';
+import {
+  LayoutDashboard, Calendar, Clock, Users, GitMerge, Briefcase,
+  Stethoscope, BarChart3, Settings, LogOut, Bell, Globe, Building,
+  Menu, X, Smile
 } from 'lucide-react';
 
 export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { logout, currentUser, hasPermission } = useAuth();
-  const { 
-    settings, 
-    branches, 
-    selectedBranchId, 
-    setSelectedBranchId, 
-    notifications,
-    unreadNotificationCount,
-    refreshData
+  const {
+    settings, branches, selectedBranchId, setSelectedBranchId,
+    notifications, unreadNotificationCount, refreshData
   } = useApp();
-  
+
   const navigate = useNavigate();
   const location = useLocation();
-  
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
 
@@ -52,7 +34,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
     { name: t.customers, path: '/admin/customers', icon: Users },
     { name: t.leads, path: '/admin/leads', icon: GitMerge },
     { name: t.services, path: '/admin/services', icon: Briefcase },
-    { name: t.employees, path: '/admin/employees', icon: UserCheck },
+    { name: t.employees, path: '/admin/employees', icon: Stethoscope },
     ...(hasPermission('BusinessOwner') ? [
       { name: t.reports, path: '/admin/reports', icon: BarChart3 },
       { name: t.settings, path: '/admin/settings', icon: Settings },
@@ -64,212 +46,164 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
     setMobileMenuOpen(false);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
+
   const handleMarkAllRead = async () => {
-    const org = currentUser?.orgId || "org-reserveflow-pro";
+    const org = currentUser?.orgId || 'org-smilecare-pro';
     await db.notifications.markAllAsRead(org);
     setNotifDropdownOpen(false);
     await refreshData();
   };
 
+  const NavButton: React.FC<{ item: typeof menuItems[0] }> = ({ item }) => {
+    const Icon = item.icon;
+    const active = location.pathname === item.path;
+    return (
+      <button
+        onClick={() => handleNav(item.path)}
+        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm ${
+          active
+            ? 'bg-brand-50 text-brand-700 font-semibold border border-brand-100'
+            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+        }`}
+      >
+        <Icon className={`h-5 w-5 ${active ? 'text-brand-600' : 'text-slate-400'}`} />
+        <span>{item.name}</span>
+      </button>
+    );
+  };
+
   return (
-    <div className={`min-h-screen flex flex-col md:flex-row bg-slate-950 text-slate-100 ${isRtl ? 'rtl' : 'ltr'}`}>
-      
-      {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex flex-col w-64 glass-panel border-r border-slate-800/80 p-5 shrink-0 z-30">
-        <div className="flex items-center gap-3 px-2 py-4 mb-6">
-          <div className="bg-gradient-to-tr from-brand-500 to-violet-500 p-2 rounded-xl text-white shadow-lg shadow-brand-500/20">
-            <Sparkles className="h-6 w-6" />
+    <div className={`min-h-screen flex flex-col md:flex-row bg-slate-50 ${isRtl ? 'rtl' : 'ltr'}`}>
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 p-4 shrink-0 z-30">
+        <div className="flex items-center gap-2.5 px-2 py-4 mb-4">
+          <div className="bg-brand-600 p-2 rounded-xl text-white">
+            <Smile className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white m-0 leading-none">ReserveFlow</h1>
-            <span className="text-[10px] text-brand-400 font-semibold tracking-widest uppercase">PRO SAAS</span>
+            <h1 className="text-lg font-display font-bold text-slate-900 leading-none">SmileCare</h1>
+            <span className="text-[10px] text-brand-600 font-semibold tracking-widest uppercase">Pro</span>
           </div>
         </div>
 
-        <nav className="flex-1 space-y-1">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const active = location.pathname === item.path;
-            return (
-              <button
-                key={item.path}
-                onClick={() => handleNav(item.path)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                  active 
-                    ? 'bg-gradient-to-r from-brand-600/30 to-violet-600/20 text-brand-300 border-l-4 border-brand-500 font-semibold' 
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
-                }`}
-              >
-                <Icon className={`h-5 w-5 ${active ? 'text-brand-400' : 'text-slate-400'}`} />
-                <span className="text-sm font-medium">{item.name}</span>
-              </button>
-            );
-          })}
+        <nav className="flex-1 space-y-0.5">
+          {menuItems.map(item => <NavButton key={item.path} item={item} />)}
         </nav>
 
-        <div className="border-t border-slate-800/80 pt-4 mt-4">
-          <div className="flex items-center gap-3 px-2 py-3 mb-3 bg-slate-900/40 rounded-xl border border-slate-800/30">
-            <div className="h-9 w-9 rounded-full bg-slate-800 flex items-center justify-center font-bold text-brand-300 border border-slate-700">
-              {currentUser?.name ? currentUser.name.charAt(0) : 'U'}
+        <div className="border-t border-slate-100 pt-4 mt-4">
+          <div className="flex items-center gap-3 px-2 py-3 mb-2 bg-slate-50 rounded-xl">
+            <div className="h-9 w-9 rounded-full bg-brand-100 flex items-center justify-center font-bold text-brand-700 text-sm">
+              {currentUser?.name?.charAt(0) || 'U'}
             </div>
             <div className="overflow-hidden">
-              <p className="text-xs font-semibold text-white truncate">{currentUser?.name}</p>
-              <p className="text-[10px] text-slate-500 truncate">{currentUser?.role}</p>
+              <p className="text-xs font-semibold text-slate-900 truncate">{currentUser?.name}</p>
+              <p className="text-[10px] text-slate-400 truncate">{currentUser?.role}</p>
             </div>
           </div>
-          <button 
-            onClick={logout}
-            className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-colors font-medium text-sm"
-          >
-            <LogOut className="h-5 w-5" />
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors text-sm font-medium">
+            <LogOut className="h-4 w-4" />
             <span>{t.logout}</span>
           </button>
         </div>
       </aside>
 
-      {/* Mobile Top Navigation */}
-      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-slate-900/80 border-b border-slate-800/80 sticky top-0 z-40 backdrop-blur-md">
+      {/* Mobile Header */}
+      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-slate-200 sticky top-0 z-40">
         <div className="flex items-center gap-2">
-          <div className="bg-gradient-to-tr from-brand-500 to-violet-500 p-1.5 rounded-lg text-white">
-            <Sparkles className="h-5 w-5" />
+          <div className="bg-brand-600 p-1.5 rounded-lg text-white">
+            <Smile className="h-4 w-4" />
           </div>
-          <span className="font-bold text-lg text-white">ReserveFlow</span>
+          <span className="font-display font-bold text-slate-900">SmileCare Pro</span>
         </div>
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => setMobileMenuOpen(true)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
-        </div>
+        <button onClick={() => setMobileMenuOpen(true)} className="p-1.5 text-slate-500" aria-label="Open menu">
+          <Menu className="h-6 w-6" />
+        </button>
       </header>
 
-      {/* Mobile Drawer menu */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 md:hidden flex justify-end">
-          <div className="w-64 bg-slate-900 border-l border-slate-800 h-full p-5 flex flex-col justify-between animate-in slide-in-from-right duration-200">
-            <div>
-              <div className="flex items-center justify-between mb-8">
-                <span className="font-bold text-white text-lg">Menu</span>
-                <button 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-              <nav className="space-y-1.5">
-                {menuItems.map((item) => {
-                  const Icon = item.icon;
-                  const active = location.pathname === item.path;
-                  return (
-                    <button
-                      key={item.path}
-                      onClick={() => handleNav(item.path)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                        active 
-                          ? 'bg-brand-500/20 text-brand-300 font-semibold' 
-                          : 'text-slate-400 hover:bg-slate-800/50'
-                      }`}
-                    >
-                      <Icon className="h-5 w-5" />
-                      <span className="text-sm font-medium">{item.name}</span>
-                    </button>
-                  );
-                })}
-              </nav>
+        <div className="fixed inset-0 bg-slate-50 backdrop-blur-sm z-50 md:hidden" onClick={() => setMobileMenuOpen(false)}>
+          <div className="w-72 bg-white h-full ml-auto p-4 flex flex-col shadow-elevated animate-slide-up" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <span className="font-display font-bold text-slate-900">Menu</span>
+              <button onClick={() => setMobileMenuOpen(false)} className="p-1.5 text-slate-400"><X className="h-5 w-5" /></button>
             </div>
-            <div>
-              <button 
-                onClick={logout}
-                className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors font-medium text-sm"
-              >
-                <LogOut className="h-5 w-5" />
-                <span>{t.logout}</span>
-              </button>
-            </div>
+            <nav className="space-y-0.5 flex-1">
+              {menuItems.map(item => <NavButton key={item.path} item={item} />)}
+            </nav>
+            <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl text-sm font-medium mt-4">
+              <LogOut className="h-4 w-4" /><span>{t.logout}</span>
+            </button>
           </div>
         </div>
       )}
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-0 overflow-y-auto">
-        
-        {/* Top Header navbar (Desktop & Tablet) */}
-        <header className="hidden md:flex items-center justify-between px-8 py-4 border-b border-slate-800/60 glass-panel shrink-0 sticky top-0 z-20">
-          <div className="flex items-center gap-6">
-            <h2 className="text-xl font-semibold text-white m-0">
-              {t.welcome}, {currentUser?.name}!
-            </h2>
-            
-            {/* Branch Selector Dropdown */}
+        <header className="hidden md:flex items-center justify-between px-6 lg:px-8 py-4 bg-white border-b border-slate-200 sticky top-0 z-20">
+          <div className="flex items-center gap-4">
+            <h2 className="text-lg font-semibold text-slate-900">{t.welcome}, {currentUser?.name}!</h2>
             {currentUser?.role !== 'Employee' && (
-              <div className="flex items-center gap-2 bg-slate-900/60 border border-slate-800 px-3 py-1.5 rounded-xl">
-                <Building className="h-4 w-4 text-brand-400" />
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
+                <Building className="h-4 w-4 text-brand-600" />
                 <select
                   value={selectedBranchId}
                   onChange={(e) => setSelectedBranchId(e.target.value)}
-                  className="bg-transparent text-slate-200 text-xs font-semibold focus:outline-none cursor-pointer pr-1"
+                  className="bg-transparent text-slate-700 text-xs font-semibold focus:outline-none cursor-pointer"
                 >
-                  <option value="all" className="bg-slate-900 text-slate-200">{t.allBranches}</option>
+                  <option value="all">{t.allBranches}</option>
                   {branches.map(br => (
-                    <option key={br.id} value={br.id} className="bg-slate-900 text-slate-200">{br.name}</option>
+                    <option key={br.id} value={br.id}>{br.name}</option>
                   ))}
                 </select>
               </div>
             )}
           </div>
 
-          <div className="flex items-center gap-4 relative">
-            {/* Public Booking Link */}
-            <a 
-              href="/book/apex-preset" 
-              target="_blank" 
-              className="text-xs bg-brand-500/10 border border-brand-500/30 text-brand-300 font-semibold px-3 py-1.5 rounded-xl hover:bg-brand-500/20 transition-all flex items-center gap-1.5"
+          <div className="flex items-center gap-3 relative">
+            <a
+              href={`/book/${settings?.publicSlug || DEFAULT_PUBLIC_BOOKING_SLUG}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs bg-brand-50 border border-brand-200 text-brand-700 font-semibold px-3 py-1.5 rounded-xl hover:bg-brand-100 transition-all flex items-center gap-1.5"
             >
               <Globe className="h-3.5 w-3.5" />
               <span>{t.publicPortal}</span>
             </a>
 
-            {/* Notification Bell with Badge */}
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setNotifDropdownOpen(!notifDropdownOpen)}
-                className="p-2 bg-slate-900/60 hover:bg-slate-800/60 border border-slate-800 text-slate-300 hover:text-white rounded-xl transition-all relative"
+                className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-xl transition-all relative"
+                aria-label="Notifications"
               >
                 <Bell className="h-5 w-5" />
                 {unreadNotificationCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white font-bold text-[10px] h-5 w-5 rounded-full flex items-center justify-center border-2 border-slate-950 animate-pulse">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white font-bold text-[10px] h-5 w-5 rounded-full flex items-center justify-center border-2 border-white">
                     {unreadNotificationCount}
                   </span>
                 )}
               </button>
 
-              {/* Notification Dropdown Drawer */}
               {notifDropdownOpen && (
-                <div className={`absolute top-full mt-2 w-80 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-4 z-50 ${isRtl ? 'left-0' : 'right-0'} animate-in fade-in slide-in-from-top-2 duration-150`}>
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
-                    <span className="font-bold text-white text-sm">Notifications</span>
-                    <button 
-                      onClick={handleMarkAllRead}
-                      className="text-xs text-brand-400 hover:text-brand-300 font-semibold hover:underline"
-                    >
-                      Mark all read
-                    </button>
+                <div className={`absolute top-full mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-elevated p-4 z-50 ${isRtl ? 'left-0' : 'right-0'} animate-slide-down`}>
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
+                    <span className="font-semibold text-slate-900 text-sm">Notifications</span>
+                    <button onClick={handleMarkAllRead} className="text-xs text-brand-600 hover:text-brand-700 font-semibold">Mark all read</button>
                   </div>
-                  <div className="max-h-60 overflow-y-auto space-y-2.5">
+                  <div className="max-h-60 overflow-y-auto space-y-2">
                     {notifications.length === 0 ? (
-                      <p className="text-xs text-slate-500 text-center py-4">No notifications yet.</p>
+                      <p className="text-xs text-slate-400 text-center py-4">No notifications yet.</p>
                     ) : (
                       notifications.map(notif => (
-                        <div key={notif.id} className={`p-2.5 rounded-xl border transition-colors ${notif.read ? 'bg-slate-900/20 border-slate-800/40 text-slate-400' : 'bg-slate-800/40 border-brand-500/20 text-slate-200'}`}>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-bold text-brand-300 uppercase tracking-wider">{notif.type.replace("Created", "")}</span>
-                            <span className="text-[9px] text-slate-500">{new Date(notif.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                          </div>
-                          <p className="text-xs font-semibold text-white">{notif.title}</p>
-                          <p className="text-[11px] text-slate-400 mt-0.5">{notif.message}</p>
+                        <div key={notif.id} className={`p-3 rounded-xl border text-sm ${notif.read ? 'bg-slate-50 border-slate-100 text-slate-500' : 'bg-brand-50/50 border-brand-100 text-slate-700'}`}>
+                          <p className="font-semibold text-slate-900 text-xs">{notif.title}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">{notif.message}</p>
                         </div>
                       ))
                     )}
@@ -280,8 +214,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
           </div>
         </header>
 
-        {/* Dynamic Route View Page */}
-        <main className="flex-1 p-6 md:p-8">
+        <main className="flex-1 p-4 md:p-6 lg:p-8">
           {children}
         </main>
       </div>

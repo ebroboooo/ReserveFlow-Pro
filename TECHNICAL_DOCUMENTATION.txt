@@ -1,0 +1,1111 @@
+SmileCare Pro — Technical Documentation
+================================================================================
+
+Version: 1.0.0
+Product: Dental clinic management SaaS
+Analysis basis: Implemented codebase only (Project2_reservation_system)
+Last reviewed: June 30, 2026
+
+
+================================================================================
+SECTION 1 — PROJECT OVERVIEW
+================================================================================
+
+What This Application Is
+------------------------
+SmileCare Pro is a single-page web application (SPA) built with React and
+TypeScript that provides dental clinic operations management and a public
+patient booking portal. The product is branded as enterprise dental clinic
+management software and ships in portfolio demo mode by default: data persists
+in the browser via localStorage, and staff authentication is simulated without
+passwords.
+
+The application can optionally connect to Firebase Firestore when
+VITE_USE_FIRESTORE=true and Firebase environment variables are configured.
+
+Business Problem It Solves
+--------------------------
+Dental clinics manage overlapping operational concerns: appointment scheduling,
+doctor availability, patient records, service catalogs, payment tracking,
+waitlists, and inbound patient inquiries. SmileCare Pro consolidates these
+into one web-based platform with:
+
+  - An internal staff dashboard for day-to-day clinic operations
+  - A public booking portal (/book/:slug) for online appointment requests
+  - A marketing landing page (/) for patient-facing discovery
+
+Target Users
+------------
+  Patients (public)       — Browse the landing page and book appointments
+                            online without login
+  Clinic owners / admins  — Configure clinic settings, view reports, manage
+                            integrations
+  Receptionists           — Manage appointments, patients, waitlist, and
+                            inquiries
+  Doctors / staff         — View schedules and clinic data (branch-scoped by
+                            default)
+  System administrators   — Highest permission tier in the demo role selector
+                            (demo)
+
+There is NO patient login account system implemented. Patients interact only
+through the public website and booking wizard.
+
+Why a Dental Clinic Would Use This Software
+-------------------------------------------
+The codebase is explicitly tailored to dental workflows:
+
+  - Domain language uses Patients, Doctors, and Dental Services
+  - Demo seed data includes dental services (cleaning, root canal, whitening,
+    implants, orthodontics)
+  - Doctor scheduling includes weekly availability, lunch breaks, and
+    conflict detection
+  - Patient profiles support clinical notes, tags (e.g., VIP, Orthodontics),
+    and visit history
+
+How the System Improves Daily Clinic Operations
+------------------------------------------------
+  Scheduling        — Week-view calendar with create/edit/delete, conflict
+                      warnings, duplication, and status workflow
+  Front desk        — Centralized patient database with search, tags, and
+                      profiles
+  Capacity mgmt     — Waitlist queue with promotion to appointments
+  Lead handling     — Kanban-style inquiry pipeline with stage progression
+  Visibility        — Dashboard KPIs, notifications, and audit activity log
+  Self-service      — Public booking portal reduces phone booking load
+  Multi-location    — Branch selector filters data across clinic locations
+
+Main Platform Objectives
+------------------------
+  1. Provide a unified admin interface for dental clinic operations
+  2. Enable online patient self-booking with validation and payment simulation
+  3. Support multi-branch clinic data scoping
+  4. Offer bilingual (English/Arabic) staff UI with RTL layout
+  5. Demonstrate SaaS architecture via repository pattern with mock and
+     Firestore backends
+  6. Ship as an installable Progressive Web App (PWA)
+
+
+================================================================================
+SECTION 2 — SYSTEM FEATURES
+================================================================================
+
+Feature Inventory
+-----------------
+  Landing Website              YES   Static marketing content
+  Appointment Booking (public) YES   Multi-step wizard
+  Staff Dashboard              YES   KPIs and quick actions
+  Patient Management           YES   CRUD + profiles
+  Doctor Management            YES   Profiles + weekly schedules
+  Services Management          YES   CRUD with branch assignment
+  Calendar                     YES   Week view fully implemented;
+                                     Day/Month are placeholders
+  Waitlist                     YES   Add, promote, cancel
+  Leads / Inquiries Pipeline   YES   Kanban CRM-style
+  Reports & Analytics          YES   Metrics + CSV export + print/PDF
+  Authentication (staff)       YES   Demo mode only
+  Notifications                YES   In-app notification center
+  Settings                     YES   Profile, demo data, integrations,
+                                     audit log
+  Search & Filters             YES   Patients, calendar staff filter,
+                                     reports date range
+  Responsive Design            YES   Mobile sidebar drawer, responsive grids
+  Dark Mode                    NO    Not implemented
+  PWA                          YES   Manifest + service worker
+  Internationalization         YES   English + Arabic (RTL)
+  Real payment processing      NO    Simulated adapters only
+  Real email/SMS               NO    Stub adapters only
+  Google Calendar sync         PARTIAL — Toggle + adapter stub; not wired to
+                                     calendar saves
+  Automated tests              NO    No test files in project
+
+
+2.1 Landing Website
+-------------------
+Route: / (guest-only; redirects logged-in staff to dashboard)
+
+Purpose: Patient-facing marketing site to promote the clinic and drive online
+bookings.
+
+How it works:
+  - Fixed navigation with anchor links (About, Services, Doctors, Reviews,
+    FAQ, Contact)
+  - Hero section with CTA to /book/smilecare-clinic
+  - Static service cards, doctor profiles, testimonials, FAQ accordion, and
+    contact form (toast confirmation only — no backend submission)
+  - Links to staff login (/login) and booking portal
+
+Users: Public visitors, prospective patients
+Business value: Brand presence, service discovery, conversion to online booking
+
+
+2.2 Staff Authentication & Login
+--------------------------------
+Route: /login
+
+Purpose: Gate access to the admin dashboard.
+
+How it works:
+  - Email input (default: admin@smilecare.com)
+  - Role selector: Super Admin, Clinic Owner, Receptionist, Doctor / Staff
+  - No password validation in demo mode
+  - Session stored in localStorage (smilecare_auth_session)
+  - "Reset Demo Data" reloads dental preset via mockDbInstance.resetPreset('Dental')
+  - "Forgot password" button is disabled
+
+Users: Clinic staff
+Business value: Role-based access demonstration for portfolio and stakeholder demos
+
+
+2.3 Dashboard
+-------------
+Route: /admin/dashboard
+
+Purpose: Operational overview for clinic staff.
+
+How it works:
+  - Computes KPIs from reservation and patient data (filtered by selected branch):
+      * Today's appointments count
+      * Total revenue (Completed or Paid appointments)
+      * Patient retention rate (returning patients with multiple completed visits)
+      * Cancellation rate
+  - Today's schedule table
+  - Recent activity from audit logs
+  - Upcoming appointments list
+  - Quick navigation to services, doctors, waitlist, and public portal
+
+Users: All authenticated staff roles
+Business value: At-a-glance clinic health and same-day schedule visibility
+
+
+2.4 Appointments Calendar (Smart Calendar)
+------------------------------------------
+Route: /admin/calendar
+
+Purpose: Visual scheduling and appointment lifecycle management.
+
+How it works:
+  - Week view: 7-column grid with hourly rows (09:00–16:00); click cells to
+    create appointments
+  - Day/Month views: Placeholder UI prompting user to switch to Week view
+  - Staff filter dropdown
+  - Appointment modal supports:
+      * Create, edit, delete
+      * Status: Pending, Confirmed, Completed, Cancelled, NoShow
+      * Payment status: Unpaid, Authorized, Paid, Refunded
+      * Payment methods: Cash, Stripe, PayPal, Card
+      * Real-time conflict detection via db.reservations.checkConflict()
+      * Duplicate appointment (creates copy for next day)
+  - On create: dispatches EnterpriseNotificationHub.dispatchBookingAlert()
+    (stub notifications)
+  - On delete: creates waitlist promotion notification if matching waitlist
+    entry exists
+
+Users: Receptionists, owners, doctors (view/manage)
+Business value: Prevents double-booking, centralizes appointment workflow
+
+
+2.5 Patient Management (Customer Database)
+------------------------------------------
+Route: /admin/customers
+
+Purpose: Maintain patient records.
+
+How it works:
+  - List view with search (name, phone, email) and tag filter
+  - Create patient modal (name, phone, email, notes, comma-separated tags,
+    status)
+  - Delete with confirmation
+  - Drill-down to Patient Profile showing:
+      * Contact info, total spending, booking count
+      * Upcoming and past appointments
+      * Clinical notes timeline (append-only notes with date stamps)
+      * Tags display
+
+Users: Receptionists, owners, doctors
+Business value: Single source of truth for patient identity, history, and notes
+
+
+2.6 Doctor Management (Employee Management)
+-------------------------------------------
+Route: /admin/employees
+
+Purpose: Manage doctors/staff profiles and weekly availability.
+
+How it works:
+  - Card grid showing doctor name, role, contact, branch assignments, completed
+    booking metrics
+  - Create/edit modal with two tabs:
+      * Profile: name, role, email, phone, status, branch checkboxes
+      * Schedule: per-day working toggle, start/end times (Mon–Fri default
+        09:00–17:00 with 12:00–13:00 break)
+  - Delete (labeled "deactivate") removes doctor record
+
+Users: Owners, receptionists
+Business value: Availability drives booking slot generation and conflict prevention
+
+
+2.7 Dental Services Management
+------------------------------
+Route: /admin/services
+
+Purpose: Maintain service catalog with pricing and duration.
+
+How it works:
+  - Service cards showing name, category, duration, price, branch count, status
+  - Create/edit modal: name, description, duration, price, category, status,
+    branch assignment
+  - Delete with confirmation
+
+Users: Owners, receptionists
+Business value: Standardized offerings for scheduling, reporting, and public booking
+
+
+2.8 Waitlist Queue
+------------------
+Route: /admin/waitlist
+
+Purpose: Track patients waiting for appointment slots.
+
+How it works:
+  - Lists Waiting entries filtered by branch
+  - Add to waitlist: patient, service, optional preferred doctor, date, time
+    preference (Morning/Afternoon/Evening/Any), notes
+  - Promote: Creates a Pending appointment at 09:00 and marks waitlist as
+    Promoted
+  - Cancel: Sets status to Cancelled
+
+Users: Receptionists, owners
+Business value: Captures demand when calendar is full; supports slot-fill workflow
+
+
+2.9 Patient Inquiries Pipeline (Leads)
+-------------------------------------
+Route: /admin/leads
+
+Purpose: CRM-style lead tracking from inquiry to conversion.
+
+How it works:
+  - Kanban board with stages: New -> Contacted -> Interested -> Converted -> Lost
+  - Pipeline stats: total value, active deals, hardcoded "+24% month-on-month"
+    acquisition rate
+  - Add lead modal: name, phone, email, source, estimated value, notes
+  - Stage advancement buttons on each lead card
+
+Users: Receptionists, owners
+Business value: Structured follow-up on prospective patients
+
+
+2.10 Reports & Analytics
+------------------------
+Route: /admin/reports (BusinessOwner+ only)
+
+Purpose: Financial and operational reporting.
+
+How it works:
+  - Date range filters: Today, Week, Month, All Time
+  - Branch-scoped metrics:
+      * Gross booking sales
+      * Completion rate
+      * Total bookings
+      * Cancellations / No-shows
+  - Service revenue contribution (progress bars)
+  - Doctor revenue leaderboard
+  - Export CSV: downloads appointment data
+  - Print / PDF: triggers window.print()
+
+Users: Clinic owners, super admins
+Business value: Data-driven decisions on services, doctors, and booking performance
+
+NOTE: Translation keys for "30-Day Revenue Forecast" exist but no forecast charts
+are rendered in the UI. No charting library is installed.
+
+
+2.11 Settings
+-------------
+Route: /admin/settings (BusinessOwner+ only)
+
+Purpose: Clinic configuration and workspace management.
+
+Four tabs:
+  Clinic Profile    — Business name, address, phone, email, currency
+                      (USD/AED/SAR/EGP), language (en/ar)
+  Demo Data Presets — Load dental demo dataset or reset to empty workspace
+  Integrations      — Toggle flags: Stripe, PayPal, Google Calendar, WhatsApp,
+                      Telegram (stored in settings; most are not enforced in
+                      UI flows)
+  Activity Log      — Read-only audit log display
+
+Users: Clinic owners, super admins
+Business value: Clinic branding, localization, demo control, integration readiness
+
+
+2.12 Public Booking Portal
+--------------------------
+Route: /book/:slug (default slug: smilecare-clinic)
+
+Purpose: Patient self-service appointment booking.
+
+4-step wizard:
+  1. Select Details: branch, service, doctor, date, available time slots
+  2. Patient Information: name, phone, email, notes
+  3. Confirm & Pay: Cash / Stripe / PayPal (simulated)
+  4. Confirmation: receipt with booking reference
+
+Validation:
+  - Past dates blocked
+  - Doctor availability checked against weekly schedule and breaks
+  - Slot conflict checked client-side and server-side via repository
+  - Email and phone format validation
+
+On success:
+  - Creates new patient record (tagged Portal-Booking)
+  - Creates Pending reservation
+  - Creates staff notification
+
+Invalid slug: Shows BusinessNotFound component
+
+Users: Public patients (no authentication)
+Business value: 24/7 booking availability, reduced front-desk workload
+
+
+2.13 Notifications
+------------------
+Location: Dashboard header bell icon
+
+Purpose: In-app alert center for staff.
+
+How it works:
+  - Loads notifications from repository
+  - Unread count badge
+  - Dropdown list with title and message
+  - "Mark all read" calls db.notifications.markAllAsRead()
+  - Types: BookingCreated, BookingCancelled, LeadCreated, System
+
+Users: All authenticated staff
+Business value: Real-time awareness of bookings and system events
+
+
+2.14 Toast Notifications (UI Feedback)
+----------------------------------------
+Purpose: Transient user feedback for actions (success, error, warning, info).
+Fixed bottom-right stack, auto-dismiss after 4 seconds, aria-live="polite".
+
+
+2.15 Multi-Branch Support
+-------------------------
+  - Branch records with name, address, phone, email, timezone
+  - Header branch selector (all or specific branch) — hidden for Employee role
+  - Services and doctors assigned to branches via branchIds
+  - Reports, dashboard, calendar, and waitlist respect selectedBranchId
+
+
+2.16 Progressive Web App (PWA)
+------------------------------
+  - manifest.json with standalone display, theme color #2563eb
+  - Service worker with network-first documents, cache-first hashed assets
+  - Update prompt when new build detected (production only)
+  - Build ID injected at build time via Vite plugin
+
+
+2.17 Internationalization (i18n)
+--------------------------------
+  - translations.ts with en and ar string tables
+  - Settings language selection updates SystemSettings.language and isRtl
+  - AppContext sets document.documentElement dir and lang attributes
+  - RTL uses Cairo font; LTR uses Inter/Outfit
+  - Landing page and booking portal are English-only
+
+
+2.18 Responsive Design
+----------------------
+  - Dashboard: collapsible mobile drawer navigation
+  - Landing page: mobile hamburger menu
+  - Responsive CSS grids
+  - Tailwind breakpoint utilities throughout
+
+
+2.19 Page Routing & Error Handling
+----------------------------------
+  /              LandingPage
+  /login         Login
+  /admin/*       Protected dashboard routes
+  /book/:slug    BookingPortal
+  *              NotFoundPage
+
+RouteTitle sets document title per route.
+PageLoader / LoadingSpinner for lazy-loaded routes and data loading.
+
+
+================================================================================
+SECTION 3 — USER ROLES
+================================================================================
+
+Role Hierarchy
+--------------
+Roles are ranked numerically in AuthContext:
+
+  SuperAdmin     Rank 4   System Administrator    All branches (null)
+  BusinessOwner  Rank 3   Clinic Owner            All branches
+  Receptionist   Rank 2   Front Desk              br-main
+  Employee       Rank 1   Dr. Staff Member        br-main
+
+Permission check: hasPermission(requiredRole) returns true if
+ROLE_RANK[currentUser.role] >= ROLE_RANK[requiredRole].
+
+Role Permissions Matrix
+-----------------------
+                        SuperAdmin  Owner  Receptionist  Employee
+  Dashboard                 YES      YES       YES          YES
+  Calendar                  YES      YES       YES          YES
+  Waitlist                  YES      YES       YES          YES
+  Patients                  YES      YES       YES          YES
+  Leads                     YES      YES       YES          YES
+  Services                  YES      YES       YES          YES
+  Doctors                   YES      YES       YES          YES
+  Reports                   YES      YES       NO           NO
+  Settings                  YES      YES       NO           NO
+  Branch selector           YES      YES       YES          NO
+  Public portal link        YES      YES       YES          YES
+
+NOTE: SuperAdmin and BusinessOwner share the same route access in the current
+implementation. The only enforced route restrictions are Reports and Settings
+(BusinessOwner minimum). SuperAdmin's higher rank is available for future
+expansion but does not unlock additional pages today.
+
+Public Patient (Unauthenticated)
+--------------------------------
+  Permissions:    View landing page, book appointments
+  Pages:          /, /book/:slug
+  Workflow:       Landing -> Booking wizard -> Confirmation
+
+
+================================================================================
+SECTION 4 — COMPLETE USER FLOWS
+================================================================================
+
+4.1 Patient Journey (Public)
+----------------------------
+  Landing Page (/)
+      |
+      +-- Browse services, doctors, FAQ, contact info
+      |
+      +-- "Book Appointment" -> /book/smilecare-clinic
+              |
+              Step 1: Select branch, service, doctor, date, time slot
+              Step 2: Enter name, phone, email, optional notes
+              Step 3: Choose payment (Cash / Stripe / PayPal) -> Confirm
+              Step 4: Confirmation screen with reference number
+              |
+              -> Patient record created in system
+              -> Appointment created (status: Pending)
+              -> Staff notification generated
+
+4.2 Receptionist Journey
+------------------------
+  /login -> Select "Receptionist" role -> Sign In
+      -> Redirected to /admin/dashboard (branch scoped to br-main)
+      -> Dashboard: Review today's schedule and KPIs
+      -> Calendar: Create/edit/cancel appointments (conflict warnings)
+      -> Patients: Search, register, open profiles, add notes
+      -> Waitlist: Add patients, promote to appointments
+      -> Leads: Add inquiries, advance pipeline stages
+      -> Services / Doctors: View and manage (full CRUD access)
+      -> Notifications: Review and mark alerts as read
+
+4.3 Doctor / Staff Journey
+--------------------------
+  /login -> Select "Doctor / Staff" role -> Sign In
+      -> Dashboard (branch fixed to br-main, no branch selector)
+      -> View today's schedule and upcoming appointments
+      -> Access calendar (can filter by staff including self)
+      -> View patient profiles and history
+      -> View services and doctor schedules
+      -> Cannot access Reports or Settings
+
+4.4 Clinic Owner / Administrator Journey
+----------------------------------------
+  /login -> Select "Clinic Owner" or "Super Admin" -> Sign In
+      -> Full dashboard access with branch selector (all locations)
+      -> All receptionist capabilities
+      -> Reports: Analyze revenue, completion rates, export CSV/PDF
+      -> Settings: Update clinic profile, currency, language (RTL)
+                   Load/reload demo data or reset workspace
+                   Toggle integration feature flags
+                   Review audit activity log
+
+4.5 Appointment Lifecycle (System Flow)
+---------------------------------------
+  Created (Pending)
+      |
+      +-- Confirmed -> Completed (+ payment tracking)
+      +-- Cancelled
+      +-- NoShow
+
+  Payment parallel track: Unpaid -> Authorized -> Paid -> Refunded
+
+
+================================================================================
+SECTION 5 — TECHNOLOGY STACK
+================================================================================
+
+Verified Dependencies (from package.json)
+-----------------------------------------
+  Language           TypeScript              ~6.0.2
+  UI Framework       React                   ^19.2.7
+  DOM Renderer       React DOM               ^19.2.7
+  Routing            React Router DOM        ^7.18.0
+  Build Tool         Vite                    ^8.1.0
+  React Plugin       @vitejs/plugin-react    ^6.0.2
+  CSS Framework      Tailwind CSS            ^4.3.1
+  Tailwind Plugin    @tailwindcss/vite        ^4.3.1
+  PostCSS            postcss                 ^8.5.15
+  Autoprefixer       autoprefixer             ^10.5.1
+  Backend (optional) Firebase                ^12.15.0
+  Icons              Lucide React            ^1.21.0
+  Linting            Oxlint                  ^1.69.0
+
+Additional Technologies (in codebase, not npm packages)
+-------------------------------------------------------
+  Fonts              Google Fonts: Inter, Outfit, Cairo
+  State Management   React Context API (Auth, App, Toast)
+  Database (default) localStorage via mock repository
+  Database (opt.)    Firebase Firestore
+  Auth (configured)  Firebase Auth module imported (not used for login)
+  Auth (active)      localStorage session simulation
+  Package Manager    npm (package-lock.json)
+  Version Control    Git
+  Deployment Config  Vercel (vercel.json)
+  PWA                Custom service worker + Web App Manifest
+
+Not Present in Project
+----------------------
+  - Charting libraries (Chart.js, Recharts, etc.)
+  - Testing frameworks (Jest, Vitest, Cypress, etc.)
+  - State management libraries (Redux, Zustand, etc.)
+  - CSS-in-JS libraries
+  - Email/SMS SDKs (stub adapters only)
+  - Stripe/PayPal SDKs (stub adapters only)
+  - Dark mode theming system
+
+
+================================================================================
+SECTION 6 — PROJECT ARCHITECTURE
+================================================================================
+
+6.1 High-Level Architecture
+---------------------------
+  React SPA (Vite)
+    Routes (React Router)
+      Public: Landing, Booking Portal
+      Protected: Admin Dashboard (lazy-loaded pages)
+    Context Providers
+      AuthProvider (session, roles)
+      AppProvider (domain data, branch scope)
+      ToastProvider (UI feedback)
+    Repository Layer (db/index.ts)
+      Mock Repositories -> localStorage
+      Firestore Repositories -> Firebase (env toggle)
+    Adapters (utils/adapters.ts)
+      Payment, Calendar, Notification stubs
+
+6.2 Folder Structure
+--------------------
+  Project2_reservation_system/
+  ├── public/
+  │   ├── favicon.svg
+  │   ├── manifest.json
+  │   └── service-worker.js
+  ├── src/
+  │   ├── App.tsx
+  │   ├── main.tsx
+  │   ├── index.css
+  │   ├── components/
+  │   │   ├── BookingPortal/
+  │   │   ├── Calendar/
+  │   │   ├── Customers/
+  │   │   ├── Dashboard/
+  │   │   ├── Employees/
+  │   │   ├── Landing/
+  │   │   ├── Layout/
+  │   │   ├── Leads/
+  │   │   ├── Reports/
+  │   │   ├── Services/
+  │   │   ├── Settings/
+  │   │   ├── Waitlist/
+  │   │   └── ui/
+  │   ├── context/
+  │   ├── db/
+  │   ├── firebase/
+  │   ├── types/
+  │   └── utils/
+  ├── vite.config.ts
+  ├── tailwind.config.js
+  ├── vercel.json
+  └── .env.example
+
+6.3 Repository Pattern
+----------------------
+All data access flows through db (RepositoryProvider):
+  db.branches | db.customers | db.reservations | db.services |
+  db.employees | db.leads | db.notifications | db.waitlist |
+  db.auditLogs | db.settings
+
+Backend selection: VITE_USE_FIRESTORE === 'true'
+
+6.4 Context Providers & State Flow
+----------------------------------
+  AuthContext  — currentUser, isLoading, login/logout, hasPermission()
+  AppContext   — All domain entities, selectedBranchId, refreshData(),
+                 audit logging
+  ToastContext — Toast queue
+
+Data flow:
+  1. User logs in -> AuthContext persists session
+  2. AppProvider calls refreshData() -> parallel repository fetches
+  3. Components read from useApp() -> render UI
+  4. Mutations call db.*.create/update/delete() -> refreshData()
+  5. Significant actions call dispatchAuditLog()
+
+6.5 Routing Architecture
+------------------------
+  - Lazy loading: All major page components use React.lazy() with Suspense
+  - GuestOnlyRoute: redirects authenticated users away from / and /login
+  - ProtectedAdminRoute: requires session; wraps DashboardLayout
+  - RequireRole: enforces BusinessOwner+ for Reports and Settings
+  - SPA fallback: Vercel rewrites all non-static paths to index.html
+
+6.6 Firebase Architecture (Optional)
+------------------------------------
+  organizations/{orgId}/
+    ├── branches/
+    ├── patients/        (maps to Customer type)
+    ├── appointments/    (maps to Reservation type)
+    ├── services/
+    ├── doctors/         (maps to Employee type)
+    ├── leads/
+    ├── notifications/
+    ├── waitlist/
+    ├── auditLogs/
+    └── settings/        (document id: "main")
+
+Firebase Auth is initialized in config.ts but NOT connected to the login flow.
+
+6.7 Scalability Rationale
+---------------------------
+  - Repository interfaces: swap mock <-> Firestore without UI changes
+  - Org-scoped Firestore paths: multi-tenant ready structure
+  - Lazy-loaded routes: smaller initial bundle
+  - Branch-scoped filtering: multi-location growth
+  - Typed domain models: safe refactoring as features grow
+  - Adapter pattern for integrations: plug in real Stripe/GCal/SMS later
+
+
+================================================================================
+SECTION 7 — DATABASE DESIGN
+================================================================================
+
+7.1 Data Model Overview
+-----------------------
+All entities include orgId (hardcoded as org-smilecare-pro in current UI flows).
+
+7.2 Collections / Entity Tables
+-------------------------------
+  Entity              Mock Key        Firestore Collection
+  Branch              branches        branches
+  Customer (Patient)  customers       patients
+  Reservation         reservations    appointments
+  Service             services        services
+  Employee (Doctor)   employees       doctors
+  Lead                leads           leads
+  Notification        notifications   notifications
+  WaitlistRecord      waitlist        waitlist
+  AuditLog            auditLogs       auditLogs
+  SystemSettings      settings        settings/main
+
+7.3 Defined but Unused Types
+----------------------------
+  Organization      — Defined in types; no repository or UI
+  HolidayOverride   — Defined in types; no repository or UI
+
+7.4 Relationships
+-----------------
+  Organization (conceptual, single org in demo)
+    Branch (1:N)
+      Reservation, WaitlistRecord, Lead (N:1 branch)
+    Customer (1:N)
+      Reservation (N:1 customer)
+    Service (N:M Branch via branchIds[])
+      Reservation (N:1 service)
+    Employee (N:M Branch via branchIds[])
+      Reservation (N:1 employee)
+
+7.5 Indexes
+-----------
+No Firestore composite indexes defined. Queries use full collection reads with
+client-side filtering, and simple equality queries for unread notifications.
+
+7.6 CRUD Operations
+-------------------
+Mock repository: Reads/writes JSON blob to localStorage key smilecare_db_store.
+Firestore repository: Uses fsGetAll, fsCreate, fsUpdate, fsDelete, fsQuery.
+
+Auto-filled on create: id, orgId, createdAt/updatedAt/timestamp, totalSpending: 0
+
+7.7 Data Validation
+-------------------
+  Booking portal  — validateBookingForm(): required fields, email regex,
+                    phone length >= 7, past date check, availability, conflicts
+  Login           — Email required (HTML5 + JS)
+  Repository      — Minimal; relies on TypeScript types and UI validation
+  Conflict detect — Time overlap in checkConflict() and isSlotBooked()
+
+7.8 Demo Data Presets
+---------------------
+  Dental  — Default on first load: 2 branches, 4 patients, 5 services,
+            3 doctors, 3 appointments, 3 leads, 1 waitlist entry
+  Empty   — Settings "Fresh Start": 1 default branch, empty collections
+
+
+================================================================================
+SECTION 8 — UI/UX DESIGN
+================================================================================
+
+8.1 Design Philosophy
+---------------------
+Clean, professional healthcare SaaS aesthetic: white cards on slate backgrounds,
+blue brand accent, rounded corners (2xl), subtle shadows.
+
+8.2 Color Palette
+-----------------
+  brand-600       #2563eb    Primary actions, active nav, accents
+  brand-50–950    Blue scale Backgrounds, borders, text
+  dental-50/600   Teal tones Landing page gradients
+  slate-50–900    Neutral    Backgrounds, text, borders
+  emerald                    Success states, paid indicators
+  amber                      Warnings, pending states
+  red                        Errors, cancellations, logout
+  Theme color (PWA)          #2563eb
+
+8.3 Typography
+--------------
+  Body (LTR)       Inter
+  Headings (LTR)   Outfit
+  Body + RTL       Cairo
+
+8.4 CSS Design System (index.css)
+---------------------------------
+  .card, .card-hover, .panel     Containers
+  .input-field                   Form inputs
+  .btn-primary, .btn-secondary,
+  .btn-danger, .btn-ghost         Buttons
+  .badge-*                       Status pills
+
+8.5 Icons
+---------
+Lucide React throughout (Smile, Calendar, Users, Stethoscope, Bell, etc.)
+
+8.6 Animations
+--------------
+  animate-fade-in, animate-slide-up, animate-slide-down, animate-spin,
+  shimmer/skeleton, active:scale-[0.98]
+
+8.7 Loading States
+------------------
+  PageLoader, LoadingSpinner, Skeleton, booking portal loading spinner
+
+8.8 Responsive Behavior
+-----------------------
+  Desktop: fixed sidebar + sticky header
+  Mobile: top header + slide-out drawer
+  Tables: horizontal scroll on small screens
+
+8.9 Accessibility
+-----------------
+  Form labels with htmlFor/id
+  aria-live="polite" on toasts
+  role="alert" on error messages
+  aria-label on icon-only buttons
+  role="status" on spinner
+  Dynamic dir attribute for RTL
+
+8.10 Dark Mode
+--------------
+NOT IMPLEMENTED. Application uses light theme exclusively.
+
+
+================================================================================
+SECTION 9 — SECURITY
+================================================================================
+
+9.1 Implemented Measures
+------------------------
+  Route protection       ProtectedAdminRoute (client-side)
+  Role-based access      RequireRole + hasPermission() (client-side)
+  Guest route isolation  Logged-in users cannot access / or /login
+  Input validation       Booking form email/phone/required field checks
+  Conflict prevention    checkConflict() before booking
+  Environment variables  Firebase keys via VITE_* env vars
+  Confirm dialogs        Delete/destructive actions require window.confirm()
+
+9.2 Not Implemented (Security Gaps)
+-----------------------------------
+  Real authentication      Demo login; no password, no Firebase Auth integration
+  Firestore security rules No firestore.rules file in project
+  API authorization        All data access is client-side
+  Rate limiting            None
+  Data encryption          localStorage is unencrypted
+  HIPAA/compliance         Not addressed; demo/portfolio scope
+  Toggle enforcement       Settings flags don't gate payment options in portal
+
+9.3 Environment Variable Security
+---------------------------------
+VITE_* variables are embedded in the client bundle when set. Production
+deployments should use Firestore security rules and Firebase Authentication
+before handling real patient data.
+
+
+================================================================================
+SECTION 10 — PERFORMANCE
+================================================================================
+
+10.1 Implemented Optimizations
+------------------------------
+  Route-level code splitting     React.lazy() for all major pages
+  Nested Suspense                Layout + page-level fallbacks
+  Parallel data fetching         AppContext.refreshData() uses Promise.all()
+  Memoized computations          useMemo in Dashboard, BookingPortal
+  Callback stability             useCallback in AppContext, ToastContext
+  PWA asset caching              Cache-first for hashed /assets/*
+  Immutable asset headers        Vercel: 1-year cache on /assets/*
+  Service worker update strategy User-prompted refresh
+  Build ID cache busting         Vite plugin injects build ID into SW
+
+10.2 Areas Without Optimization
+-------------------------------
+  Firestore queries       Full collection reads; client-side filtering
+  Component memoization   No React.memo on list items
+  Virtual scrolling       Not used on long lists
+  Bundle analysis         No bundle analyzer configured
+
+
+================================================================================
+SECTION 11 — SOFTWARE ENGINEERING PRACTICES
+================================================================================
+
+Patterns & Practices Observed
+-----------------------------
+  Repository Pattern       interfaces.ts + mock/Firestore + factory
+  Adapter Pattern          Payment, calendar, notification adapters
+  Provider Pattern         Auth, App, Toast context providers
+  Separation of Concerns   UI -> context -> repository -> storage
+  TypeScript               Comprehensive domain types
+  Component Composition    Modal, ConfirmDialog, EmptyState, Skeleton, etc.
+  Utility Extraction       bookingValidation.ts, translations.ts, FS helpers
+  Lazy Loading             Route-based code splitting
+  Config-driven backend    Environment toggle for Firestore
+  Audit Trail              dispatchAuditLog() on significant mutations
+  Legacy Migration         Auth and DB localStorage key migration
+
+Technical Debt
+--------------
+  - Hardcoded org-smilecare-pro throughout components
+  - Integration toggles not enforced in consuming features
+  - Organization and HolidayOverride types unused
+  - Day/Month calendar views incomplete
+  - No automated test coverage
+
+
+================================================================================
+SECTION 12 — BUSINESS VALUE
+================================================================================
+
+Clinic Owners
+  Unified visibility into revenue, cancellations, and doctor performance
+  Multi-branch management from one dashboard
+  Configurable clinic profile, currency, and language
+  Demo-ready platform for investor or client presentations
+
+Receptionists
+  Single interface for scheduling, patients, waitlist, and inquiries
+  Conflict warnings reduce scheduling errors
+  Search and tag-based patient filtering speeds lookup
+  In-app notifications for new bookings
+  Waitlist promotion workflow fills cancelled slots
+
+Doctors
+  Visibility into personal schedule via calendar
+  Patient history and clinical notes accessible from profiles
+  Weekly schedule management with break support
+
+Patients
+  24/7 online booking without phone calls
+  Clear multi-step booking with available slot display
+  Confirmation receipt with reference number
+  Professional landing page builds trust
+
+Business Growth
+  Lead pipeline tracks inquiry-to-appointment conversion
+  Public booking portal expands acquisition channels
+  Reports identify top services and highest-revenue doctors
+  PWA enables mobile-first patient engagement
+  Arabic/RTL support opens MENA market positioning
+
+Efficiency
+  Automated slot availability calculation
+  Audit log reduces need for manual activity tracking
+  CSV export eliminates manual report compilation
+  Demo data presets accelerate onboarding evaluation
+
+
+================================================================================
+SECTION 13 — FUTURE IMPROVEMENTS
+================================================================================
+
+High Priority
+  - Production Firebase Authentication
+  - Firestore Security Rules
+  - Wire integration toggles to UI (Stripe/PayPal/waitlist flags)
+  - Complete Day/Month calendar views
+  - Connect GoogleCalendarAdapter to appointment save flow
+  - Server-side validation layer (Cloud Functions or rules)
+  - Automated test suite
+
+Medium Priority
+  - Email/SMS appointment reminders (real providers)
+  - Real Stripe/PayPal SDK integration
+  - Firestore query optimization (indexed queries)
+  - Branch management UI in Settings
+  - HolidayOverride implementation
+  - Patient portal/login
+  - Pagination on large lists
+  - Forecast charts (translation keys exist, no UI)
+  - Multi-tenant org onboarding
+
+Nice-to-Have
+  - Dark mode
+  - Google Calendar two-way sync
+  - Insurance verification workflow
+  - Landing page CMS (dynamic content from database)
+  - Drag-and-drop calendar
+  - Role-specific dashboards
+  - Bundle size analyzer
+  - Contact form backend (landing contact shows toast only)
+
+
+================================================================================
+SECTION 14 — PROJECT SUMMARY
+================================================================================
+
+Executive Summary
+-----------------
+SmileCare Pro is a modern dental clinic management platform delivered as a
+React 19 single-page application with TypeScript, Tailwind CSS 4, and an
+optional Firebase Firestore backend. It addresses the operational complexity
+of running a dental practice by combining staff scheduling, patient records,
+service and doctor management, waitlist handling, inquiry tracking, and
+analytics into one responsive admin dashboard — alongside a public-facing
+marketing site and online booking portal.
+
+The application demonstrates production-oriented architecture through its
+repository pattern (switchable between localStorage demo mode and Firestore),
+role-based access control, bilingual English/Arabic support with RTL layout,
+and Progressive Web App capabilities. It ships with a fully seeded dental
+clinic demo dataset, enabling immediate evaluation without backend
+configuration.
+
+Built for portfolio demonstration and client proposals, the current release
+simulates authentication, payments, and third-party integrations via adapter
+stubs — providing a complete UX prototype ready for production hardening with
+Firebase Auth, Firestore security rules, and real payment/notification providers.
+
+GitHub README Summary
+---------------------
+SmileCare Pro — Enterprise dental clinic management SaaS. Manage appointments,
+patients, doctors, services, waitlists, and patient inquiries from a unified
+dashboard. Patients book online via a public portal. Built with React 19,
+TypeScript, Tailwind CSS 4, and Firebase-ready architecture. Includes PWA
+support, English/Arabic i18n, and portfolio demo mode.
+
+Demo: /login (no password) | Booking: /book/smilecare-clinic
+
+Portfolio / Upwork Summary
+--------------------------
+Full-stack dental SaaS SPA featuring 10+ admin modules, public booking wizard
+with availability engine and conflict detection, repository pattern with mock
+and Firestore implementations, role-based permissions, audit logging, CSV
+export, PWA, responsive design, RTL internationalization.
+
+Stack: React | TypeScript | Vite | Tailwind | Firebase | Lucide Icons
+
+Technical Interview Talking Points
+----------------------------------
+  1. Repository pattern decouples UI from persistence; one env var switches backends
+  2. Scheduling engine: weekly doctor schedules with breaks -> slot generation ->
+     overlap detection
+  3. State management: React Context with parallel fetch batching in AppProvider
+  4. Performance: Route-level code splitting, PWA caching, memoized KPI calculations
+  5. Trade-offs: Client-side auth suitable for demo; production requires Firebase
+     Auth + security rules
+  6. Extensibility: Adapter interfaces for payments, calendar, notifications ready
+     for real SDK integration
+
+Client Proposal Summary
+-----------------------
+SmileCare Pro gives your dental clinic a professional digital foundation: staff
+manage the full appointment lifecycle from one dashboard, patients book online
+24/7, and owners track revenue and doctor performance through built-in reports.
+The platform supports multiple clinic locations, bilingual operations, and mobile
+installation as a Progressive Web App. The current build is a fully functional
+prototype with demo data, ready for deployment and production enhancement with
+your Firebase project, payment gateway, and notification services.
+
+
+================================================================================
+APPENDIX A — Route Reference
+================================================================================
+
+  /                    Public (guest)     LandingPage
+  /login               Public (guest)     Login
+  /admin/dashboard     Staff              Dashboard
+  /admin/calendar      Staff              SmartCalendar
+  /admin/waitlist      Staff              WaitlistQueue
+  /admin/customers     Staff              CustomerDatabase
+  /admin/leads         Staff              LeadsPipeline
+  /admin/services      Staff              ServicesManagement
+  /admin/employees     Staff              EmployeeManagement
+  /admin/reports       BusinessOwner+     Reports
+  /admin/settings      BusinessOwner+     Settings
+  /book/:slug          Public             BookingPortal
+  *                    Public             NotFoundPage
+
+
+================================================================================
+APPENDIX B — Environment Configuration
+================================================================================
+
+  VITE_USE_FIRESTORE              false     Enable Firestore repositories
+  VITE_FIREBASE_API_KEY           —         Firebase API key
+  VITE_FIREBASE_AUTH_DOMAIN       —         Firebase auth domain
+  VITE_FIREBASE_PROJECT_ID        —         Firebase project ID
+  VITE_FIREBASE_STORAGE_BUCKET    —         Firebase storage
+  VITE_FIREBASE_MESSAGING_SENDER_ID —       FCM sender ID
+  VITE_FIREBASE_APP_ID            —         Firebase app ID
+
+
+================================================================================
+APPENDIX C — Demo Credentials
+================================================================================
+
+  Staff URL       /login
+  Email           admin@smilecare.com (any email accepted)
+  Password        Not required
+  Public booking  /book/smilecare-clinic
+
+
+================================================================================
+END OF DOCUMENT
+================================================================================
+
+This document reflects the codebase as implemented. Features marked as stubs,
+placeholders, or not implemented should not be represented as production-ready
+without additional development.

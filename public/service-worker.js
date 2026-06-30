@@ -1,6 +1,6 @@
-/* ReserveFlow Pro PWA service worker — build: __BUILD_ID__ */
+/* SmileCare Pro PWA service worker — build: __BUILD_ID__ */
 const BUILD_ID = '__BUILD_ID__';
-const STATIC_CACHE = `reserveflow-static-${BUILD_ID}`;
+const STATIC_CACHE = `smilecare-static-${BUILD_ID}`;
 
 const IMMUTABLE_ASSET_PATTERN = /\/assets\/.+\.(?:js|css|woff2?|ttf|eot|svg|png|jpe?g|gif|webp|ico)$/i;
 const PUBLIC_STATIC_PATTERN = /^\/(?:favicon\.(?:ico|svg)|manifest\.json|icons(?:\/|$)|icons\.svg|robots\.txt)$/;

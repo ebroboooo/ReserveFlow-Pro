@@ -1,99 +1,99 @@
 <p align="center">
-  <img src="screenshots/banner.png" alt="ReserveFlow Pro Banner" width="100%">
+  <img src="assets/banner.png" alt="SmileCare Pro Banner" width="100%">
 </p>
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://reserve-flow-pro.vercel.app)
-[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge\&logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge\&logo=typescript)](https://www.typescriptlang.org/)
-[![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?style=for-the-badge\&logo=firebase)](https://firebase.google.com/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-Ready-FFCA28?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](#)
 
+# SmileCare Pro
 
-# ReserveFlow Pro
+Enterprise dental clinic management SaaS for appointment scheduling, patient records, doctor coordination, billing, waitlists, and a public patient booking portal.
 
-Enterprise Appointment & Reservation Management Platform built for businesses that require real-time booking, scheduling, customer management, and staff coordination.
+## Demo Access
 
-## Live Demo
+This project runs in **portfolio demo mode** with a local mock database.
 
-🔗 **Demo:** reserve-flow-pro.vercel.app
+| Field | Value |
+|-------|-------|
+| Staff login URL | `/login` |
+| Email | `admin@smilecare.com` |
+| Password | Not required (demo) |
+| Roles | Super Admin, Clinic Owner, Receptionist, Doctor / Staff |
 
-Demo Access
-
-This project is currently running in Demo Mode.
-
-Email: admin@reserveflow.com
-Authentication: No password required
-Role: Select any available role from the dropdown menu to explore the application.
-
-Note: This is a portfolio demonstration. Production authentication and backend services are planned for a future release.
-
----
+**Public booking portal:** `/book/smilecare-clinic`
 
 ## Features
 
-* Appointment & reservation management
-* Customer management
-* Staff scheduling
-* Real-time dashboard
-* Responsive design
-* Progressive Web App (PWA)
-* Secure authentication
-* Modern UI
-
----
+- Patient management with profiles, tags, and visit history
+- Doctor scheduling with weekly availability and conflict detection
+- Appointment calendar with status workflow and payment tracking
+- Public online booking wizard with validation and demo payments
+- Patient inquiry pipeline (CRM-style leads)
+- Waitlist queue with promotion to appointments
+- Reports and analytics with CSV export
+- Multi-branch clinic support
+- Arabic / English with RTL layout support
+- Progressive Web App (PWA)
+- Firebase Firestore integration (optional via environment config)
 
 ## Tech Stack
 
-* React
-* TypeScript
-* Vite
-* Firebase
-* Tailwind CSS
-
----
-
-## Screenshots
-
-### Login
-![Login](screenshots/login.PNG)
-
-### Dashboard
-![Dashboard](screenshots/dashboard.PNG)
-
-### Reservations
-![Reservations](screenshots/reservations.PNG)
-
-### Customers
-![Customers](screenshots/customers.PNG)
-
-### Public Booking Portal
-![Public Booking Portal](screenshots/publicbookingportal.PNG)
-
----
+- React 19 + TypeScript
+- Vite 8
+- Tailwind CSS 4
+- React Router 7
+- Firebase (optional backend)
+- Lucide React icons
 
 ## Run Locally
 
 ```bash
-git clone https://github.com/ebroboooo/ReserveFlow-Pro.git
-
-cd ReserveFlow-Pro
-
+git clone <your-repo-url>
+cd Project2_reservation_system
 npm install
-
 npm run dev
 ```
 
----
+## Build for Production
+
+```bash
+npm run build
+npm run preview
+```
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+
+```bash
+VITE_USE_FIRESTORE=false
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+```
+
+## Project Structure
+
+```
+src/
+├── components/     # UI pages and shared components
+├── context/        # Auth, app state, toasts
+├── db/             # Repository layer (mock + Firestore)
+├── firebase/       # Firebase configuration
+├── types/          # TypeScript domain types
+└── utils/          # Adapters, validation, translations
+```
 
 ## Roadmap
 
-* Email notifications
-* SMS reminders
-* Calendar integrations
-* Analytics dashboard
-* Multi-branch support
-
----
+- Production Firebase Authentication
+- Email and SMS appointment reminders
+- Google Calendar two-way sync
+- Insurance verification workflow
+- Multi-tenant clinic onboarding
 
 ## Author
 

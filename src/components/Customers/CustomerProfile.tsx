@@ -24,7 +24,7 @@ export const CustomerProfile: React.FC<Props> = ({ customerId }) => {
   const t = translations[lang];
 
   if (!customer) {
-    return <div className="text-red-400">Customer profile not found.</div>;
+    return <div className="text-red-500 text-sm">Patient profile not found.</div>;
   }
 
   // Filter reservations
@@ -42,13 +42,13 @@ export const CustomerProfile: React.FC<Props> = ({ customerId }) => {
     e.preventDefault();
     if (!newNote.trim()) return;
 
-    const org = "org-reserveflow-pro";
+    const org = "org-smilecare-pro";
     const updatedNotes = customer.notes 
       ? `${customer.notes}\n\n[${new Date().toLocaleDateString()}] ${newNote}`
       : `[${new Date().toLocaleDateString()}] ${newNote}`;
 
     await db.customers.update(org, customer.id, { notes: updatedNotes });
-    await dispatchAuditLog("Customer Note Added", `Added note timeline update to customer ${customer.fullName}`);
+    await dispatchAuditLog("Patient Note Added", `Added clinical note for patient ${customer.fullName}`);
     setNewNote('');
     await refreshData();
   };
@@ -79,13 +79,13 @@ export const CustomerProfile: React.FC<Props> = ({ customerId }) => {
     <div className="space-y-6 animate-in fade-in duration-200">
       
       {/* Profile Overview Card */}
-      <div className="glass-card p-6 rounded-3xl border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+      <div className="card p-6 rounded-3xl border-slate-200 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
         <div className="flex flex-col md:flex-row items-center gap-5 z-10">
           <div className="h-16 w-16 rounded-2xl bg-gradient-to-tr from-brand-600 to-violet-600 text-white flex items-center justify-center font-extrabold text-2xl border border-brand-500/20 shadow-lg">
             {customer.fullName.charAt(0)}
           </div>
           <div className="text-center md:text-left space-y-1">
-            <h3 className="text-xl font-bold text-white">{customer.fullName}</h3>
+            <h3 className="text-xl font-bold text-slate-900">{customer.fullName}</h3>
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-slate-400">
               <span className="flex items-center gap-1"><Phone className="h-3.5 w-3.5" />{customer.phone}</span>
               <span className="flex items-center gap-1"><Mail className="h-3.5 w-3.5" />{customer.email}</span>
@@ -94,13 +94,13 @@ export const CustomerProfile: React.FC<Props> = ({ customerId }) => {
         </div>
 
         <div className="flex gap-4 z-10">
-          <div className="glass-card bg-slate-950/60 px-5 py-3 rounded-2xl text-center border-slate-850">
+          <div className="card bg-slate-50/60 px-5 py-3 rounded-2xl text-center border-slate-200">
             <p className="text-xs text-slate-500 uppercase font-bold tracking-wider">{t.revenue}</p>
             <p className="text-xl font-extrabold text-green-400 mt-1">{customer.totalSpending} {currency}</p>
           </div>
-          <div className="glass-card bg-slate-950/60 px-5 py-3 rounded-2xl text-center border-slate-850">
+          <div className="card bg-slate-50/60 px-5 py-3 rounded-2xl text-center border-slate-200">
             <p className="text-xs text-slate-500 uppercase font-bold tracking-wider">Bookings</p>
-            <p className="text-xl font-extrabold text-white mt-1">{customerReservations.length}</p>
+            <p className="text-xl font-extrabold text-slate-900 mt-1">{customerReservations.length}</p>
           </div>
         </div>
       </div>
@@ -111,23 +111,23 @@ export const CustomerProfile: React.FC<Props> = ({ customerId }) => {
         <div className="lg:col-span-2 space-y-6">
           
           {/* Upcoming Section */}
-          <div className="glass-card p-5 rounded-2xl border-slate-800/60 space-y-4">
-            <h4 className="font-bold text-white text-sm flex items-center gap-2">
-              <Calendar className="h-4.5 w-4.5 text-brand-400" />
+          <div className="card p-5 rounded-2xl border-slate-200 space-y-4">
+            <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <Calendar className="h-4.5 w-4.5 text-brand-600" />
               <span>Upcoming Appointments</span>
             </h4>
 
             {upcomingReservations.length === 0 ? (
-              <p className="text-xs text-slate-550 py-3">No upcoming appointments scheduled.</p>
+              <p className="text-xs text-slate-500 py-3">No upcoming appointments scheduled.</p>
             ) : (
               <div className="space-y-3">
                 {upcomingReservations.map(res => {
                   const srv = services.find(s => s.id === res.serviceId);
                   const emp = employees.find(e => e.id === res.employeeId);
                   return (
-                    <div key={res.id} className="flex items-center justify-between p-3 bg-slate-900/30 border border-slate-850 rounded-xl">
+                    <div key={res.id} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
                       <div className="space-y-1">
-                        <p className="text-xs font-bold text-white">{srv?.name}</p>
+                        <p className="text-xs font-bold text-slate-900">{srv?.name}</p>
                         <p className="text-[10px] text-slate-400">{res.date} at {res.time} • Staff: {emp?.name}</p>
                       </div>
                       <span className="text-[10px] font-bold text-yellow-400 bg-yellow-500/10 px-2 py-0.5 rounded-md uppercase tracking-wider">
@@ -141,19 +141,19 @@ export const CustomerProfile: React.FC<Props> = ({ customerId }) => {
           </div>
 
           {/* Past History Table */}
-          <div className="glass-card p-5 rounded-2xl border-slate-800/60 space-y-4">
-            <h4 className="font-bold text-white text-sm flex items-center gap-2">
+          <div className="card p-5 rounded-2xl border-slate-200 space-y-4">
+            <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
               <Clock className="h-4.5 w-4.5 text-slate-400" />
               <span>Past Booking History</span>
             </h4>
 
             {pastReservations.length === 0 ? (
-              <p className="text-xs text-slate-550 py-3">No past records found.</p>
+              <p className="text-xs text-slate-500 py-3">No past records found.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-850 text-slate-450 uppercase tracking-widest text-[9px] font-bold">
+                    <tr className="border-b border-slate-200 text-slate-450 uppercase tracking-widest text-[9px] font-bold">
                       <th className="py-2.5">Date</th>
                       <th className="py-2.5">Service</th>
                       <th className="py-2.5">Staff</th>
@@ -161,14 +161,14 @@ export const CustomerProfile: React.FC<Props> = ({ customerId }) => {
                       <th className="py-2.5 text-right">Paid</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-850/60 text-slate-300 font-semibold">
+                  <tbody className="divide-y divide-slate-850/60 text-slate-700 font-semibold">
                     {pastReservations.map(res => {
                       const srv = services.find(s => s.id === res.serviceId);
                       const emp = employees.find(e => e.id === res.employeeId);
                       return (
-                        <tr key={res.id} className="hover:bg-slate-900/10">
+                        <tr key={res.id} className="hover:bg-white/10">
                           <td className="py-2.5 font-bold text-slate-400">{res.date}</td>
-                          <td className="py-2.5 text-white">{srv?.name}</td>
+                          <td className="py-2.5 text-slate-900">{srv?.name}</td>
                           <td className="py-2.5">{emp?.name}</td>
                           <td className="py-2.5">
                             <span className={`px-2 py-0.5 rounded text-[9px] uppercase tracking-wider font-bold ${
@@ -177,7 +177,7 @@ export const CustomerProfile: React.FC<Props> = ({ customerId }) => {
                               {res.status}
                             </span>
                           </td>
-                          <td className="py-2.5 text-right font-bold text-slate-200">
+                          <td className="py-2.5 text-right font-bold text-slate-800">
                             {res.paymentDetails?.amount || 0} {currency}
                           </td>
                         </tr>
@@ -193,24 +193,24 @@ export const CustomerProfile: React.FC<Props> = ({ customerId }) => {
 
         {/* Right Side: Timeline Notes Diary */}
         <div className="space-y-6">
-          <div className="glass-card p-5 rounded-2xl border-slate-800/60 space-y-4">
-            <h4 className="font-bold text-white text-sm flex items-center gap-2">
-              <MessageSquare className="h-4.5 w-4.5 text-brand-400" />
+          <div className="card p-5 rounded-2xl border-slate-200 space-y-4">
+            <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <MessageSquare className="h-4.5 w-4.5 text-brand-600" />
               <span>Notes Timeline Diary</span>
             </h4>
 
             {/* Note creation */}
             <form onSubmit={handleAddNote} className="space-y-3">
               <textarea
-                placeholder="Enter patient status, salon styling references, or booking notes..."
+                placeholder="Enter patient status, allergies, treatment notes, or booking preferences..."
                 value={newNote}
                 onChange={(e) => setNewNote(e.target.value)}
                 rows={2}
-                className="w-full glass-input text-xs"
+                className="w-full input-field text-xs"
               />
               <button 
                 type="submit" 
-                className="glass-btn-primary w-full py-2 text-xs flex items-center justify-center gap-1"
+                className="btn-primary w-full py-2 text-xs flex items-center justify-center gap-1"
               >
                 <Plus className="h-4 w-4" />
                 <span>Save Note Log</span>
@@ -222,7 +222,7 @@ export const CustomerProfile: React.FC<Props> = ({ customerId }) => {
               {timelineLogs.length === 0 ? (
                 <p className="text-xs text-slate-500 text-center py-4">No notes recorded yet.</p>
               ) : (
-                <div className="relative border-l border-slate-800 pl-4 space-y-4">
+                <div className="relative border-l border-slate-200 pl-4 space-y-4">
                   {timelineLogs.map((log) => (
                     <div key={log.id} className="relative space-y-1">
                       {/* Timeline dot */}
@@ -231,7 +231,7 @@ export const CustomerProfile: React.FC<Props> = ({ customerId }) => {
                       <div className="flex items-center justify-between">
                         <span className="text-[9px] text-slate-500 font-extrabold">{log.date}</span>
                       </div>
-                      <p className="text-xs text-slate-300 font-medium leading-relaxed bg-slate-900/20 p-2.5 rounded-xl border border-slate-850/40">
+                      <p className="text-xs text-slate-700 font-medium leading-relaxed bg-white/20 p-2.5 rounded-xl border border-slate-200">
                         {log.text}
                       </p>
                     </div>
