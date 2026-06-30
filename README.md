@@ -58,34 +58,34 @@ Public Booking Portal:
 # 📸 Screenshots
 
 ### 🏠 Landing Page
-![Landing Page](screenshots/Landing.PNG)
+![Landing Page](screenshots/landing.PNG)
 
 ### 🔐 Login
-![Login](screenshots/Login.PNG)
+![Login](screenshots/login.PNG)
 
 ### 📊 Dashboard
-![Dashboard](screenshots/Dashboard.PNG)
+![Dashboard](screenshots/dashboard.PNG)
 
 ### 📅 Calendar
-![Calendar](screenshots/Calendar.PNG)
+![Calendar](screenshots/calendar.PNG)
 
 ### 👥 Patients
-![Patients](screenshots/Patients.PNG)
+![Patients](screenshots/patients.PNG)
 
 ### 👨‍⚕️ Doctors
-![Doctors](screenshots/Doctors.PNG)
+![Doctors](screenshots/doctors.PNG)
 
 ### 📋 Appointments
-![Appointments](screenshots/Appointments.PNG)
+![Appointments](screenshots/appointments.PNG)
 
 ### 🦷 Booking Portal
-![Booking Portal](screenshots/Booking.PNG)
+![Booking Portal](screenshots/booking.PNG)
 
 ### 📈 Reports
-![Reports](screenshots/Reports.PNG)
+![Reports](screenshots/reports.PNG)
 
 ### ⚙️ Settings
-![Settings](screenshots/Settings.PNG)
+![Settings](screenshots/settings.PNG)
 
 ---
 
