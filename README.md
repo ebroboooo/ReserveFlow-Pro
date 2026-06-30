@@ -57,18 +57,35 @@ Public Booking Portal:
 
 # 📸 Screenshots
 
-> Replace filenames below with your actual screenshots if different.
+### 🏠 Landing Page
+![Landing Page](screenshots/Landing.PNG)
 
-- Landing Page
-- Login
-- Dashboard
-- Calendar
-- Patients
-- Doctors
-- Appointments
-- Booking Portal
-- Reports
-- Settings
+### 🔐 Login
+![Login](screenshots/Login.PNG)
+
+### 📊 Dashboard
+![Dashboard](screenshots/Dashboard.PNG)
+
+### 📅 Calendar
+![Calendar](screenshots/Calendar.PNG)
+
+### 👥 Patients
+![Patients](screenshots/Patients.PNG)
+
+### 👨‍⚕️ Doctors
+![Doctors](screenshots/Doctors.PNG)
+
+### 📋 Appointments
+![Appointments](screenshots/Appointments.PNG)
+
+### 🦷 Booking Portal
+![Booking Portal](screenshots/Booking.PNG)
+
+### 📈 Reports
+![Reports](screenshots/Reports.PNG)
+
+### ⚙️ Settings
+![Settings](screenshots/Settings.PNG)
 
 ---
 
